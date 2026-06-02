@@ -4,7 +4,7 @@ on:
   schedule:
     # Programado para rodar todos os dias às 03:00 da manhã (Horário de Brasília / 06:00 UTC)
     - cron: '0 6 * * *'
-  workflow_dispatch: # Adiciona o botão para você rodar manualmente quando quiser
+  workflow_dispatch: # Permite que você clique no botão para rodar manualmente sempre que quiser
 
 jobs:
   executar-robo:
@@ -21,7 +21,7 @@ jobs:
 
       - name: 3. Instalar navegadores e dependências
         run: |
-          pip install playwright pandas openpyxl
+          pip install playwright pandas openpyxl requests
           playwright install chromium
 
       - name: 4. Executar Explorador de Links
