@@ -21,7 +21,7 @@ jobs:
 
       - name: 3. Instalar navegadores e dependências
         run: |
-          pip install playwright pandas openpyxl requests
+          pip install playwright pandas openpyxl requests beautifulsoup4
           playwright install chromium
 
       - name: 4. Executar Explorador de Links
