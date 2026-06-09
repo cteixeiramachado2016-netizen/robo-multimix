@@ -28,6 +28,9 @@ jobs:
         run: python explorador_multimix_centro.py
 
       - name: 5. Executar Robô de Preços
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: python meu_robo.py
 
       - name: 6. Salvar dados atualizados no GitHub
