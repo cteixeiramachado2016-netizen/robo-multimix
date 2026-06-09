@@ -1,5 +1,6 @@
 import os
 import re
+import sys  # Importado para capturar a sessão via linha de comando
 import asyncio
 from datetime import datetime
 from dotenv import load_dotenv
@@ -10,23 +11,25 @@ from supabase import create_client, Client
 load_dotenv("credenciais_supabase.env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-# Na nuvem com RLS ativo, usamos a SERVICE_KEY se disponível, ou a KEY padrão
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    print("❌ Erro: Chaves do Supabase não encontradas no arquivo credenciais_supabase.env!")
+    print("❌ Erro: Chaves do Supabase não encontradas!")
     exit(1)
 
 # Inicializa o cliente do Supabase
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- CONFIGURAÇÕES DE ARQUIVOS ---
-FILE_LINKS = "links_multimix.txt"
-INFO_MERCADO = "Mercado Multimix - Rua Marechal Deodoro centro Petrópolis - RJ (Geral)"
+# --- CONFIGURAÇÕES DE ARQUIVOS E SESSÕES ---
+INFO_MERCADO = "Mercado Multimix - Rua Marechal Deodoro centro Petrópolis - RJ"
 BASE_URL = "https://www.emporiomultimix.com.br"
-
-# Controla quantos links abrem ao mesmo tempo (2 é perfeito para estabilidade)
 MAX_CONCURRENT_TASKS = 2
+
+# CONFIGURAÇÃO DE BLOCO (Salvar a cada X produtos para não perder progresso)
+TAMANHO_BLOCO_SALVAMENTO = 50
+bloco_acumulador = []
+lock_banco = asyncio.Lock()  # Garante que duas abas não tentem limpar a lista ao mesmo tempo
+contador_salvos = 0
 
 def extrair_valor_numerico(texto_preco):
     try:
@@ -46,15 +49,15 @@ def extrair_nome_pelo_link(url):
     except:
         return "Produto Sem Nome"
 
-def ler_dados_do_arquivo():
+def ler_dados_do_arquivo(nome_arquivo):
     produtos_links = []
-    if not os.path.exists(FILE_LINKS):
-        print(f"❌ Erro: O arquivo '{FILE_LINKS}' não foi encontrado!")
+    if not os.path.exists(nome_arquivo):
+        print(f"❌ Erro: O arquivo '{nome_arquivo}' não foi encontrado!")
         return produtos_links
         
-    print(f"✅ Arquivo de links encontrado: '{FILE_LINKS}'")
+    print(f"✅ Arquivo de links encontrado: '{nome_arquivo}'")
     
-    with open(FILE_LINKS, 'r', encoding='utf-8') as f:
+    with open(nome_arquivo, 'r', encoding='utf-8') as f:
         for linha in f:
             link = linha.strip()
             if link and not link.startswith("#"):
@@ -75,13 +78,30 @@ def ler_dados_do_arquivo():
 
     return produtos_unicos
 
+async def enviar_bloco_para_supabase():
+    """Função interna para descarregar o bloco atual no banco de dados"""
+    global bloco_acumulador, contador_salvos
+    if not bloco_acumulador:
+        return
+
+    async with lock_banco:
+        try:
+            # Envia o lote atual de dados
+            supabase.table("historico_precos").insert(bloco_acumulador).execute()
+            contador_salvos += len(bloco_acumulador)
+            print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos em tempo real! (Total gravado: {contador_salvos})")
+            bloco_acumulador = []  # Limpa o bloco com sucesso
+        except Exception as e:
+            print(f"❌ Erro ao salvar bloco intermediário no Supabase: {e}")
+            # Em caso de falha de conexão, mantemos o bloco para tentar na próxima rodada
+
 async def raspar_produto_individual(sem, browser, item, idx, total_itens):
-    """Roda de forma assíncrona respeitando o limite do semáforo"""
+    """Roda de forma assíncrona, raspa e já gerencia o salvamento em tempo real"""
+    global bloco_acumulador
     async with sem:
         url = item["url"]
         nome = item["nome"]
         
-        # Cria um contexto isolado por aba (economiza muita memória)
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
@@ -90,7 +110,6 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
         
         try:
             await page.goto(url, wait_until="domcontentloaded")
-            # Espera os elementos carregarem/estabilizarem
             await page.wait_for_timeout(3000)
             
             try:
@@ -114,69 +133,74 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             valor = extrair_valor_numerico(preco_txt)
             print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
-            return {
-                "mercado": INFO_MERCADO,
+            dados_produto = {
+                "mercado": f"{INFO_MERCADO} (Sessão)",
                 "produto": nome,
                 "preco_texto": preco_txt,
                 "valor_numerico": valor,
                 "url_produto": url
             }
+
+            # Alimenta o bloco acumulador
+            bloco_acumulador.append(dados_produto)
+
+            # Se atingiu a meta do bloco (ex: 50 itens), dispara o salvamento assíncrono
+            if len(bloco_acumulador) >= TAMANHO_BLOCO_SALVAMENTO:
+                await enviar_bloco_para_supabase()
             
         except Exception as e:
             print(f"❌ [{idx}/{total_itens}] Erro no item {nome[:25]}... | {str(e)[:40]}")
-            return None
         finally:
             await page.close()
             await context.close()
 
-async def realizar_raspagem_async():
-    itens_para_rodar = ler_dados_do_arquivo()
+async def realizar_raspagem_async(nome_arquivo):
+    itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
     if not itens_para_rodar: 
         print("⚠️ Nenhum produto para processar.")
         return
 
     total_itens = len(itens_para_rodar)
     
-    print(f"\n🚀 {INFO_MERCADO} (Modo Assíncrono Nuvem + Supabase)")
-    print(f"Total de itens para processar: {total_itens}")
+    print(f"\n🚀 {INFO_MERCADO} (Modo Assíncrono com Carga em Tempo Real)")
+    print(f"Alvo: {nome_arquivo} | Total de itens: {total_itens}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print("-" * 60)
 
-    # O semáforo impede que o script abra mais do que 2 abas por vez
     sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
     
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         
-        # Cria a lista de tarefas assíncronas
         tarefas = [
             raspar_produto_individual(sem, browser, item, idx, total_itens)
             for idx, item in enumerate(itens_para_rodar, start=1)
         ]
         
-        # Executa todas em paralelo e aguarda os resultados
-        resultados = await asyncio.gather(*tarefas)
+        # O gather continuará rodando a esteira de páginas
+        await asyncio.gather(*tarefas)
         await browser.close()
         
-    # Filtra os itens que falharam (retornaram None)
-    dados_para_salvar = [r for r in resultados if r is not None]
-
-    # --- SALVAR NO SUPABASE (BANCO DE DADOS NA NUVEM EM SÃO PAULO) ---
-    if dados_para_salvar:
-        print(f"\n💾 Enviando {len(dados_para_salvar)} dados coletados para o Supabase em São Paulo...")
-        try:
-            tamanho_bloco = 500
-            for i in range(0, len(dados_para_salvar), tamanho_bloco):
-                bloco = dados_para_salvar[i:i + tamanho_bloco]
-                supabase.table("historico_precos").insert(bloco).execute()
-                print(f"✅ Bloco de {len(bloco)} itens enviado com sucesso!")
-                
-            print("\n🎉 Todos os dados foram salvos na nuvem com sucesso!")
-        except Exception as e:
-            print(f"❌ Erro ao salvar dados no Supabase: {e}")
-    else:
-        print("\n⚠️ Nenhum dado válido foi coletado para salvar.")
+    # --- LIMPEZA FINAL ---
+    # Ao sair do loop, se sobrou algum produto no bloco (ex: os últimos 12 itens), salva eles
+    if bloco_acumulador:
+        print("\n📦 Salvando os últimos itens restantes no acumulador...")
+        await enviar_bloco_para_supabase()
+        
+    print(f"\n🎉 Processo Concluído! Total Geral Gravado no Supabase: {contador_salvos} itens.")
 
 if __name__ == "__main__":
-    # Inicia o loop de eventos assíncronos do Python
-    asyncio.run(realizar_raspagem_async())
+    # REGRA DE CATEGORIA DINÂMICA:
+    # Se você rodar: python meu_robo.py mercearia
+    # Ele vai procurar o arquivo: links_mercearia.txt
+    # Se rodar sem nada, o padrão é o arquivo antigo: links_multimix.txt
+    
+    if len(sys.argv) > 1:
+        categoria = sys.argv[1].strip().lower()
+        arquivo_alvo = f"links_{categoria}.txt"
+        print(f"📂 Categoria selecionada via argumento: {categoria.upper()}")
+    else:
+        arquivo_alvo = "links_multimix.txt"
+        print("📂 Nenhuma categoria enviada. Rodando arquivo completo padrão.")
+
+    asyncio.run(realizar_raspagem_async(arquivo_alvo))
