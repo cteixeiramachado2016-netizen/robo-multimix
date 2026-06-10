@@ -1,42 +1,39 @@
 name: Pipeline de Preços - Multimix Centro
 
 on:
-  schedule:
-    # Programado para rodar todos os dias às 03:00 da manhã (Horário de Brasília / 06:00 UTC)
-    - cron: '0 6 * * *'
-  workflow_dispatch: # Permite que você clique no botão para rodar manualmente sempre que quiser
+  workflow_dispatch:
+    # Mantém o botão manual ativo no painel do GitHub Actions
 
 jobs:
   executar-robo:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 1. Baixar código do repositório
+      # 1. Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: 2. Configurar o Python
-        uses: actions/setup-python@v5
+      # 2. Configura o ambiente Python na nuvem
+      - name: Configurar Python
+        uses: actions/with-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.10'
+          cache: 'pip' # Otimiza o tempo de inicialização
 
-      - name: 3. Instalar navegadores e dependências
+      # 3. Instala as dependências necessárias para o projeto
+      - name: Instalar Dependências
         run: |
-          pip install playwright pandas openpyxl requests beautifulsoup4 python-dotenv supabase
-          playwright install chromium
+          python -m pip install --upgrade pip
+          pip install playwright supabase python-dotenv
+          # Se você usar mais alguma biblioteca, pode adicionar a linha do pip install aqui
 
-      - name: 4. Executar Explorador de Links
-        run: python explorador_multimix_centro.py
+      # 4. Instala os navegadores do Playwright (Chromium)
+      - name: Instalar Navegadores do Playwright
+        run: playwright install chromium
 
-      - name: 5. Executar Robô de Preços
+      # 5. Executa o robô passando as credenciais escondidas (Secrets) do GitHub
+      - name: Executar o Robô de Preços
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: python meu_robo.py
-
-      - name: 6. Salvar dados atualizados no GitHub
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add precos_mercado.xlsx historico_precos.txt produtos_multimix_centro.txt
-          git commit -m "Automação: Atualização diária de preços [Nova Build]" || echo "Nenhuma mudança hoje."
-          git push
