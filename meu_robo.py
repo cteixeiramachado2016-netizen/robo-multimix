@@ -2,7 +2,7 @@ import os
 import re
 import sys  # Captura a sessão via linha de comando
 import asyncio
-from datetime import datetime
+from datetime import datetime, date
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
@@ -86,10 +86,10 @@ async def enviar_bloco_para_supabase():
 
     async with lock_banco:
         try:
-            # Envia o lote atual de dados para a nova tabela historico_precos
+            # Envia o lote atual de dados para a tabela historico_precos
             supabase.table("historico_precos").insert(bloco_acumulador).execute()
             contador_salvos += len(bloco_acumulador)
-            print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos em tempo real! (Total gravado: {contador_salvos})")
+            print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos em tempo real! (Total gravado nesta rodada: {contador_salvos})")
             bloco_acumulador = []  # Limpa o bloco com sucesso após gravar
         except Exception as e:
             print(f"❌ Erro ao salvar bloco intermediário no Supabase: {e}")
@@ -150,15 +150,44 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             await context.close()
 
 async def realizar_raspagem_async(nome_arquivo):
-    itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
-    if not itens_para_rodar: 
-        print("⚠️ Nenhum produto para processar.")
+    itens_arquivo = ler_dados_do_arquivo(nome_arquivo)
+    if not itens_arquivo: 
+        print("⚠️ Nenhum produto encontrado no arquivo.")
         return
 
-    total_itens = len(itens_para_rodar)
+    total_original = len(itens_arquivo)
+    hoje_str = date.today().isoformat()
     
-    print(f"\n🚀 {INFO_MERCADO} (Modo Assíncrono com Carga em Tempo Real)")
-    print(f"Alvo: {nome_arquivo} | Total de itens: {total_itens}")
+    print(f"\n🔍 [Memória] Verificando o que já foi coletado hoje ({hoje_str}) no Supabase...")
+    
+    # Busca links gravados hoje para este mercado específico para saber onde continuar
+    urls_ja_coletadas = set()
+    try:
+        resposta = supabase.table("historico_precos") \
+            .select("url_produto") \
+            .gte("criado_em", f"{hoje_str}T00:00:00") \
+            .execute()
+        
+        if resposta.data:
+            urls_ja_coletadas = {row["url_produto"] for row in resposta.data if row.get("url_produto")}
+            print(f"💡 Encontrados {len(urls_ja_coletadas)} produtos já processados hoje.")
+    except Exception as e:
+        print(f"⚠️ Não foi possível consultar o histórico (rodando do zero): {e}")
+
+    # Filtra a lista mantendo APENAS o que não foi coletado hoje
+    itens_para_rodar = [item for item in itens_arquivo if item["url"] not in urls_ja_coletadas]
+    total_itens = len(itens_para_rodar)
+    itens_pula = total_original - total_itens
+
+    if itens_pula > 0:
+        print(f"⏭️ {itens_pula} links ignorados (já estavam salvos de execuções anteriores de hoje).")
+        
+    if total_itens == 0:
+        print("🎉 Todos os links do arquivo já foram processados e salvos hoje! Nada para fazer.")
+        return
+
+    print(f"\n🚀 {INFO_MERCADO} (Modo Inteligente - Continuando de onde parou)")
+    print(f"Alvo: {nome_arquivo} | Restantes para processar: {total_itens} de {total_original}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
     print("-" * 60)
@@ -168,27 +197,26 @@ async def realizar_raspagem_async(nome_arquivo):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         
-        # PROCESSAMENTO EM LOTES SEGUROS: Processa de 50 em 50 para controlar a memória
+        # PROCESSAMENTO EM LOTES SEGUROS
         for i in range(0, total_itens, TAMANHO_BLOCO_SALVAMENTO):
             grupo_atual = itens_para_rodar[i:i + TAMANHO_BLOCO_SALVAMENTO]
             print(f"\n📦 Iniciando lote de {i+1} até {min(i + TAMANHO_BLOCO_SALVAMENTO, total_itens)}...")
             
-            # Cria tarefas APENAS para os 50 itens do lote atual
+            # Cria tarefas apenas para os itens deste lote
             tarefas = [
                 raspar_produto_individual(sem, browser, item, idx, total_itens)
                 for idx, item in enumerate(grupo_atual, start=i + 1)
             ]
             
-            # Executa o lote de 50 e espera terminar
             await asyncio.gather(*tarefas)
             
-            # Força a gravação imediata do lote coletado no Supabase
+            # Força a gravação imediata no Supabase
             if bloco_acumulador:
                 await enviar_bloco_para_supabase()
                 
         await browser.close()
         
-    print(f"\n🎉 Processo Concluído! Total Geral Gravado no Supabase: {contador_salvos} itens.")
+    print(f"\n🎉 Processo Concluído! Total Novo Gravado no Supabase: {contador_salvos} itens.")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
