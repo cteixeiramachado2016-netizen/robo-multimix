@@ -1,6 +1,6 @@
 import os
 import re
-import sys  # Importado para capturar a sessão via linha de comando
+import sys  # Captura a sessão via linha de comando
 import asyncio
 from datetime import datetime
 from dotenv import load_dotenv
@@ -28,7 +28,7 @@ MAX_CONCURRENT_TASKS = 2
 # CONFIGURAÇÃO DE BLOCO (Salvar a cada X produtos para não perder progresso)
 TAMANHO_BLOCO_SALVAMENTO = 50
 bloco_acumulador = []
-lock_banco = asyncio.Lock()  # Garante que duas abas não tentem limpar a lista ao mesmo tempo
+lock_banco = asyncio.Lock()  # Garante segurança nas operações assíncronas
 contador_salvos = 0
 
 def extrair_valor_numerico(texto_preco):
@@ -86,17 +86,16 @@ async def enviar_bloco_para_supabase():
 
     async with lock_banco:
         try:
-            # Envia o lote atual de dados
+            # Envia o lote atual de dados para a nova tabela historico_precos
             supabase.table("historico_precos").insert(bloco_acumulador).execute()
             contador_salvos += len(bloco_acumulador)
             print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos em tempo real! (Total gravado: {contador_salvos})")
-            bloco_acumulador = []  # Limpa o bloco com sucesso
+            bloco_acumulador = []  # Limpa o bloco com sucesso após gravar
         except Exception as e:
             print(f"❌ Erro ao salvar bloco intermediário no Supabase: {e}")
-            # Em caso de falha de conexão, mantemos o bloco para tentar na próxima rodada
 
 async def raspar_produto_individual(sem, browser, item, idx, total_itens):
-    """Roda de forma assíncrona, raspa e já gerencia o salvamento em tempo real"""
+    """Roda de forma assíncrona, raspa e joga os dados no acumulador"""
     global bloco_acumulador
     async with sem:
         url = item["url"]
@@ -143,10 +142,6 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
 
             # Alimenta o bloco acumulador
             bloco_acumulador.append(dados_produto)
-
-            # Se atingiu a meta do bloco (ex: 50 itens), dispara o salvamento assíncrono
-            if len(bloco_acumulador) >= TAMANHO_BLOCO_SALVAMENTO:
-                await enviar_bloco_para_supabase()
             
         except Exception as e:
             print(f"❌ [{idx}/{total_itens}] Erro no item {nome[:25]}... | {str(e)[:40]}")
@@ -165,6 +160,7 @@ async def realizar_raspagem_async(nome_arquivo):
     print(f"\n🚀 {INFO_MERCADO} (Modo Assíncrono com Carga em Tempo Real)")
     print(f"Alvo: {nome_arquivo} | Total de itens: {total_itens}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
+    print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
     print("-" * 60)
 
     sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
@@ -172,29 +168,29 @@ async def realizar_raspagem_async(nome_arquivo):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         
-        tarefas = [
-            raspar_produto_individual(sem, browser, item, idx, total_itens)
-            for idx, item in enumerate(itens_para_rodar, start=1)
-        ]
-        
-        # O gather continuará rodando a esteira de páginas
-        await asyncio.gather(*tarefas)
+        # PROCESSAMENTO EM LOTES SEGUROS: Processa de 50 em 50 para controlar a memória
+        for i in range(0, total_itens, TAMANHO_BLOCO_SALVAMENTO):
+            grupo_atual = itens_para_rodar[i:i + TAMANHO_BLOCO_SALVAMENTO]
+            print(f"\n📦 Iniciando lote de {i+1} até {min(i + TAMANHO_BLOCO_SALVAMENTO, total_itens)}...")
+            
+            # Cria tarefas APENAS para os 50 itens do lote atual
+            tarefas = [
+                raspar_produto_individual(sem, browser, item, idx, total_itens)
+                for idx, item in enumerate(grupo_atual, start=i + 1)
+            ]
+            
+            # Executa o lote de 50 e espera terminar
+            await asyncio.gather(*tarefas)
+            
+            # Força a gravação imediata do lote coletado no Supabase
+            if bloco_acumulador:
+                await enviar_bloco_para_supabase()
+                
         await browser.close()
-        
-    # --- LIMPEZA FINAL ---
-    # Ao sair do loop, se sobrou algum produto no bloco (ex: os últimos 12 itens), salva eles
-    if bloco_acumulador:
-        print("\n📦 Salvando os últimos itens restantes no acumulador...")
-        await enviar_bloco_para_supabase()
         
     print(f"\n🎉 Processo Concluído! Total Geral Gravado no Supabase: {contador_salvos} itens.")
 
 if __name__ == "__main__":
-    # REGRA DE CATEGORIA DINÂMICA:
-    # Se você rodar: python meu_robo.py mercearia
-    # Ele vai procurar o arquivo: links_mercearia.txt
-    # Se rodar sem nada, o padrão é o arquivo antigo: links_multimix.txt
-    
     if len(sys.argv) > 1:
         categoria = sys.argv[1].strip().lower()
         arquivo_alvo = f"links_{categoria}.txt"
