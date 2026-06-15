@@ -1,0 +1,67 @@
+import streamlit as st
+from supabase import create_client, Client
+import os
+from dotenv import load_dotenv
+
+# 1. CARREGAR CONFIGURAÇÕES E CONECTAR AO SUPABASE
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+@st.cache_resource
+def init_supabase():
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
+
+supabase: Client = init_supabase()
+
+# Configuração da página do Club Help
+st.set_page_config(page_title="Club Help - Painel do Assinante", page_icon="🛒", layout="wide")
+
+# 2. GERENCIAMENTO DE SESSÃO (LOGIN)
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+def fazer_login(email, password):
+    try:
+        res = supabase.auth.sign_in_with_password({"email": email, "password": password})
+        st.session_state.user = res.user
+        st.success("Login realizado com sucesso!")
+        st.rerun()
+    except Exception as e:
+        st.error(f"Erro ao autenticar: Verifique seu e-mail e senha.")
+
+def fazer_logout():
+    supabase.auth.sign_out()
+    st.session_state.user = None
+    st.rerun()
+
+# =======================================================
+# TELA 1: FORMULÁRIO DE LOGIN (Se não estiver logado)
+# =======================================================
+if st.session_state.user is None:
+    st.title("🏆 Club Help")
+    st.subheader("Painel do Assinante - Economia Inteligente")
+    
+    with st.form("login_form"):
+        email = st.text_input("E-mail cadastrado")
+        senha = st.text_input("Senha", type="password")
+        botao_entrar = st.form_submit_button("Entrar no Painel")
+        
+        if botao_entrar:
+            fazer_login(email, senha)
+
+# =======================================================
+# TELA 2: PAINEL PRINCIPAL (Se já estiver logado)
+# =======================================================
+else:
+    col_user, col_out = st.columns([8, 2])
+    with col_user:
+        st.write(f"Conectado como: **{st.session_state.user.email}**")
+    with col_out:
+        if st.button("Sair / Logout"):
+            fazer_logout()
+
+    st.title("🛒 Monte sua Lista & Compare Preços")
+    st.write("Busque os produtos coletados hoje em Petrópolis e descubra onde seu carrinho fica mais barato.")
+    
+    st.info("Próximo passo: Conectar a barra de pesquisa com a tabela 'historico_precos'.")
