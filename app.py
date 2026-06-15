@@ -69,8 +69,8 @@ else:
     # ---------------------------------------------------
     st.subheader("1. Escolha ou Crie uma Lista")
     
-    # Buscar listas existentes do usuário para um Selectbox
-    listas_query = supabase.table("listas").select("id, nome_lista").execute()
+    # AJUSTE DE SEGURANÇA: Filtrando as listas apenas do usuário logado
+    listas_query = supabase.table("listas").select("id, nome_lista").eq("user_id", st.session_state.user.id).execute()
     listas_existentes = listas_query.data
     
     col_lista1, col_lista2 = st.columns([5, 5])
@@ -82,6 +82,7 @@ else:
             st.session_state.lista_ativa_id = opcoes_lista[lista_selecionada]
         else:
             st.warning("Você ainda não tem nenhuma lista criada.")
+            st.session_state.lista_ativa_id = None
             
     with col_lista2:
         with st.form("nova_lista_form"):
@@ -96,44 +97,87 @@ else:
                     st.rerun()
 
     # ---------------------------------------------------
-    # FLUXO 2: BUSCA DE PRODUTOS E ADIÇÃO (Se houver lista ativa)
+    # FLUXO 2: BUSCA DE PRODUTOS E ADIÇÃO
     # ---------------------------------------------------
     if st.session_state.lista_ativa_id:
         st.write("---")
-        st.subheader("2. Adicione Produtos à sua Lista")
         
-        # Campo de texto para digitar o termo de busca
-        busca_termo = st.text_input("Digite o nome do produto (Ex: Leite, Arroz, Feijão):")
+        # Criamos duas colunas em layout largo: Esquerda para adicionar / Direita para ver o carrinho
+        col_adicionar, col_carrinho = st.columns([4, 6])
         
-        if busca_termo:
-            # Faz a busca na tabela 'historico_precos' filtrando pelo termo digitado
-            # Usamos select("produto").distinct() para não repetir o mesmo produto várias vezes na listagem
-            produtos_encontrados = supabase.table("historico_precos") \
-                .select("produto") \
-                .ilike("produto", f"%{busca_termo}%") \
+        with col_adicionar:
+            st.subheader("2. Adicione Produtos")
+            busca_termo = st.text_input("Digite o nome do produto (Ex: Leite, Arroz):")
+            
+            if busca_termo:
+                produtos_encontrados = supabase.table("historico_precos") \
+                    .select("produto") \
+                    .ilike("produto", f"%{busca_termo}%") \
+                    .execute()
+                
+                nomes_produtos = list(set([p["produto"] for p in produtos_encontrados.data]))
+                
+                if nomes_produtos:
+                    produto_escolhido = st.selectbox("Produtos encontrados no mercado:", nomes_produtos)
+                    qtd = st.number_input("Quantidade:", min_value=1, value=1, step=1)
+                    
+                    if st.button("➕ Adicionar à Lista"):
+                        ref_prod = supabase.table("historico_precos").select("id").eq("produto", produto_escolhido).limit(1).execute()
+                        if ref_prod.data:
+                            id_do_produto = ref_prod.data[0]["id"]
+                            
+                            supabase.table("itens_lista").insert({
+                                "lista_id": st.session_state.lista_ativa_id,
+                                "produto_id": id_do_produto,
+                                "quantidade": qtd
+                            }).execute()
+                            st.success(f"{produto_escolhido} (x{qtd}) adicionado!")
+                            st.rerun() # Recarrega a tela para atualizar o carrinho ao lado
+                else:
+                    st.error("Nenhum produto encontrado com esse nome.")
+
+        # ---------------------------------------------------
+        # FLUXO 3: CARRINHO ATUAL E CÁLCULO DE VALORES
+        # ---------------------------------------------------
+        with col_carrinho:
+            st.subheader("📋 Itens na Lista Atual")
+            
+            # Faz o "Join" trazendo os itens da lista juntamente com o preço e mercado do histórico_precos
+            itens_query = supabase.table("itens_lista") \
+                .select("id, quantidade, historico_precos(produto, preco, mercado)") \
+                .eq("lista_id", st.session_state.lista_ativa_id) \
                 .execute()
             
-            nomes_produtos = list(set([p["produto"] for p in produtos_encontrados.data]))
+            itens_na_lista = itens_query.data
             
-            if nomes_produtos:
-                produto_escolhido = st.selectbox("Produtos encontrados no mercado:", nomes_produtos)
-                qtd = st.number_input("Quantidade:", min_value=1, value=1, step=1)
+            if itens_na_lista:
+                total_geral = 0.0
                 
-                if st.button("➕ Adicionar à Lista"):
-                    # Aqui inserimos o item na tabela itens_lista amarrando ao ID da lista ativa
-                    # Nota: Caso use um ID numérico ou string do produto, adaptamos. Aqui usaremos o próprio nome ou ID.
-                    # Para simplificar neste ponto, simulamos usando o id vindo do banco se sua tabela tiver 'id_produto'
+                # Exibe cabeçalho da tabela de conferência
+                for item in itens_na_lista:
+                    info_produto = item.get("historico_precos", {})
+                    nome_p = info_produto.get("produto", "Desconhecido")
+                    preco_u = info_produto.get("preco", 0.0)
+                    mercado = info_produto.get("mercado", "Não informado")
+                    quantidade = item.get("quantidade", 1)
+                    subtotal = preco_u * quantidade
+                    total_geral += subtotal
                     
-                    # Buscando um ID válido desse produto na tabela historico para salvar a referência
-                    ref_prod = supabase.table("historico_precos").select("id").eq("produto", produto_escolhido).limit(1).execute()
-                    if ref_prod.data:
-                        id_do_produto = ref_prod.data[0]["id"]
-                        
-                        supabase.table("itens_lista").insert({
-                            "lista_id": st.session_state.lista_ativa_id,
-                            "produto_id": id_do_produto,
-                            "quantidade": qtd
-                        }).execute()
-                        st.success(f"{produto_escolhido} (x{qtd}) adicionado com sucesso!")
+                    # Cria linhas de exibição com botão para remover item
+                    col_item_nome, col_item_qtd, col_item_sub, col_item_del = st.columns([4, 2, 2, 2])
+                    col_item_nome.write(f"**{nome_p}**\n_{mercado}_")
+                    col_item_qtd.write(f"{quantidade}x R$ {preco_u:.2f}")
+                    col_item_sub.write(f"R$ {subtotal:.2f}")
+                    
+                    if col_item_del.button("🗑️", key=f"del_{item['id']}"):
+                        supabase.table("itens_lista").delete().eq("id", item["id"]).execute()
+                        st.toast(f"Item removido.")
+                        st.rerun()
+                
+                st.write("---")
+                # Caixa de destaque com o valor total calculado
+                st.metric(label="Valor Total Estimado do Carrinho", value=f"R$ {total_geral:.2f}")
+                st.info("💡 Dica do Club Help: Esse valor considera as últimas coletas do seu robô em Petrópolis!")
+                
             else:
-                st.error("Nenhum produto encontrado com esse nome na base de dados.")
+                st.info("Sua lista selecionada está vazia. Busque produtos ao lado para preenchê-la.")
