@@ -105,19 +105,25 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
         page = await context.new_page()
-        page.set_default_timeout(35000)
+        # Otimização de tempo limite: 20 segundos é mais que suficiente para um link individual
+        page.set_default_timeout(20000)
         
         try:
-            await page.goto(url, wait_until="domcontentloaded")
-            await page.wait_for_timeout(3000)
+            response = await page.goto(url, wait_until="domcontentloaded")
             
+            # 🛡️ DEFESA: Se o site do mercado responder com Erro 500 ou 404, ignora e pula imediatamente
+            if response and response.status >= 500:
+                print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor do mercado.")
+                return
+
+            # Espera inteligente: Em vez de wait_for_timeout fixo de 3s, espera o título carregar na tela
+            tag_h1 = page.locator("h1").first
             try:
-                tag_h1 = page.locator("h1").first
-                if await tag_h1.is_visible():
-                    nome_real = await tag_h1.inner_text()
-                    nome_real = nome_real.strip()
-                    if nome_real:
-                        nome = nome_real
+                await tag_h1.wait_for(state="visible", timeout=4000)
+                nome_real = await tag_h1.inner_text()
+                nome_real = nome_real.strip()
+                if nome_real:
+                    nome = nome_real
             except:
                 pass
 
@@ -133,9 +139,8 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
             dados_produto = {
-                "mercado": f"{INFO_MERCADO} (Sessão)",
+                "mercado": f"{INFO_MERCADO}",
                 "produto": nome,
-                "preco_texto": preco_txt,
                 "valor_numerico": valor,
                 "url_produto": url
             }
@@ -160,12 +165,12 @@ async def realizar_raspagem_async(nome_arquivo):
     
     print(f"\n🔍 [Memória] Verificando o que já foi coletado hoje ({hoje_str}) no Supabase...")
     
-    # Busca links gravados hoje para este mercado específico para saber onde continuar
+    # 🌟 CORREÇÃO CRÍTICA: Mudado de 'criado_em' para 'created_at' para alinhar com o banco e o PHP
     urls_ja_coletadas = set()
     try:
         resposta = supabase.table("historico_precos") \
             .select("url_produto") \
-            .gte("criado_em", f"{hoje_str}T00:00:00") \
+            .gte("created_at", f"{hoje_str}T00:00:00") \
             .execute()
         
         if resposta.data:
