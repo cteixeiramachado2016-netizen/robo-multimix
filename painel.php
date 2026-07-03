@@ -14,16 +14,17 @@ $supabase_url = 'https://zlwcizhknyuvaquwikft.supabase.co';
 $supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpsd2Npemhrbnl1dmFxdXdpa2Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4ODM1NDQsImV4cCI6MjA5NTQ1OTU0NH0.43YWLUCG5nesLY8yW3l0oe0dbdkwmNuUXS5KnN72suo';
 $tabela = 'historico_precos';
 
-// 3. Consulta a tabela historico_precos - CORRIGIDO para garantir método GET e JSON puro
-$url = $supabase_url . '/rest/v1/' . $tabela . '?select=mercado,produto,valor_numerico,preco_texto,criado_em&order=criado_em.desc&limit=10000';
+// 3. Consulta a tabela historico_precos - CORRIGIDO para GET Puro
+$url = $supabase_url . '/rest/v1/' . $tabela . '?select=mercado,produto,valor_numerico,preco_texto,criado_em&order=criado_em.desc&limit=1000';
 
-$ch = curl_init($url);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET'); // Força o método correto de busca para o Supabase
+curl_setopt($ch, CURLOPT_HTTPGET, true); // Força um GET nativo e limpa conflitos de formulário
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'apikey: ' . $supabase_key,
     'Authorization: Bearer ' . $supabase_key,
-    'Content-Type: application/json' // Alinha com o esperado pela API REST
+    'Accept: application/json'
 ]);
 
 $response = curl_exec($ch);
