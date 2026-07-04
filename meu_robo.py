@@ -21,7 +21,8 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- CONFIGURAÇÕES DE ARQUIVOS E SESSÕES ---
-INFO_MERCADO = "Mercado Multimix - Rua Marechal Deodoro centro Petrópolis - RJ"
+NOME_MERCADO = "Mercado Multimix"
+ENDERECO_MERCADO = "Rua Marechal Deodoro Centro Petrópolis - RJ"
 BASE_URL = "https://www.emporiomultimix.com.br"
 MAX_CONCURRENT_TASKS = 2
 
@@ -105,18 +106,15 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
         page = await context.new_page()
-        # Otimização de tempo limite: 20 segundos é mais que suficiente para um link individual
         page.set_default_timeout(20000)
         
         try:
             response = await page.goto(url, wait_until="domcontentloaded")
             
-            # 🛡️ DEFESA: Se o site do mercado responder com Erro 500 ou 404, ignora e pula imediatamente
             if response and response.status >= 500:
                 print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor do mercado.")
                 return
 
-            # Espera inteligente: Em vez de wait_for_timeout fixo de 3s, espera o título carregar na tela
             tag_h1 = page.locator("h1").first
             try:
                 await tag_h1.wait_for(state="visible", timeout=4000)
@@ -138,14 +136,15 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             valor = extrair_valor_numerico(preco_txt)
             print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
+            # AJUSTE: Campos mapeados perfeitamente com nome, endereço isolado e preço
             dados_produto = {
-                "mercado": f"{INFO_MERCADO}",
+                "mercado": NOME_MERCADO,
+                "endereco": ENDERECO_MERCADO,
                 "produto": nome,
                 "valor_numerico": valor,
                 "url_produto": url
             }
 
-            # Alimenta o bloco acumulador
             bloco_acumulador.append(dados_produto)
             
         except Exception as e:
@@ -165,12 +164,12 @@ async def realizar_raspagem_async(nome_arquivo):
     
     print(f"\n🔍 [Memória] Verificando o que já foi coletado hoje ({hoje_str}) no Supabase...")
     
-    # 🌟 CORREÇÃO CRÍTICA: Mudado de 'criado_em' para 'created_at' para alinhar com o banco e o PHP
+    # CORREÇÃO: Alinhado para puxar a coluna correta 'criado_em'
     urls_ja_coletadas = set()
     try:
         resposta = supabase.table("historico_precos") \
             .select("url_produto") \
-            .gte("created_at", f"{hoje_str}T00:00:00") \
+            .gte("criado_em", f"{hoje_str}T00:00:00") \
             .execute()
         
         if resposta.data:
@@ -179,7 +178,6 @@ async def realizar_raspagem_async(nome_arquivo):
     except Exception as e:
         print(f"⚠️ Não foi possível consultar o histórico (rodando do zero): {e}")
 
-    # Filtra a lista mantendo APENAS o que não foi coletado hoje
     itens_para_rodar = [item for item in itens_arquivo if item["url"] not in urls_ja_coletadas]
     total_itens = len(itens_para_rodar)
     itens_pula = total_original - total_itens
@@ -191,7 +189,7 @@ async def realizar_raspagem_async(nome_arquivo):
         print("🎉 Todos os links do arquivo já foram processados e salvos hoje! Nada para fazer.")
         return
 
-    print(f"\n🚀 {INFO_MERCADO} (Modo Inteligente - Continuando de onde parou)")
+    print(f"\n🚀 {NOME_MERCADO} (Modo Inteligente - Continuando de onde parou)")
     print(f"Alvo: {nome_arquivo} | Restantes para processar: {total_itens} de {total_original}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
@@ -202,12 +200,10 @@ async def realizar_raspagem_async(nome_arquivo):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         
-        # PROCESSAMENTO EM LOTES SEGUROS
         for i in range(0, total_itens, TAMANHO_BLOCO_SALVAMENTO):
             grupo_atual = itens_para_rodar[i:i + TAMANHO_BLOCO_SALVAMENTO]
             print(f"\n📦 Iniciando lote de {i+1} até {min(i + TAMANHO_BLOCO_SALVAMENTO, total_itens)}...")
             
-            # Cria tarefas apenas para os itens deste lote
             tarefas = [
                 raspar_produto_individual(sem, browser, item, idx, total_itens)
                 for idx, item in enumerate(grupo_atual, start=i + 1)
@@ -215,7 +211,6 @@ async def realizar_raspagem_async(nome_arquivo):
             
             await asyncio.gather(*tarefas)
             
-            # Força a gravação imediata no Supabase
             if bloco_acumulador:
                 await enviar_bloco_para_supabase()
                 
