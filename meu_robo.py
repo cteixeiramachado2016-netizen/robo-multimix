@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
 
-# 1. Carrega as chaves do seu arquivo personalizado e organized
+# 1. Carrega as chaves do seu arquivo personalizado e organizado
 load_dotenv("credenciais_supabase.env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -145,9 +145,9 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             valor = extrair_valor_numerico(preco_txt)
             print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
+            # 🛠️ AJUSTADO: Campo 'endereco' removido para evitar o erro PGRST204 do Supabase
             dados_produto = {
                 "mercado": NOME_MERCADO,
-                "endereco": ENDERECO_MERCADO,
                 "produto": nome,
                 "valor_numerico": valor,
                 "url_produto": url
@@ -197,7 +197,7 @@ async def realizar_raspagem_async(nome_arquivo):
         print(f"⏭️ {itens_pula} links ignorados (já estavam salvos de execuções anteriores de hoje).")
         
     if total_itens == 0:
-        print("🎉 Todos os links do arquivo já foram processados e salvos hoje! Nada para fazer.")
+        print("🎉 Todos os links do arquivo já foram processados and salvos hoje! Nada para fazer.")
         return
 
     print(f"\n🚀 {NOME_MERCADO} (Modo Inteligente - Fluxo de Injeção Rápida)")
