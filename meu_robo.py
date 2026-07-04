@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
 
-# 1. Carrega as chaves do seu arquivo personalizado e organizado
+# 1. Carrega as chaves do seu arquivo personalizado e organized
 load_dotenv("credenciais_supabase.env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -80,20 +80,29 @@ def ler_dados_do_arquivo(nome_arquivo):
     return produtos_unicos
 
 async def enviar_bloco_para_supabase():
-    """Função interna para descarregar o bloco atual no banco de dados"""
+    """Função interna para descarregar o bloco atual no banco de dados com diagnóstico"""
     global bloco_acumulador, contador_salvos
     if not bloco_acumulador:
         return
 
     async with lock_banco:
         try:
-            # Envia o lote atual de dados para a tabela historico_precos
-            supabase.table("historico_precos").insert(bloco_acumulador).execute()
-            contador_salvos += len(bloco_acumulador)
-            print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos em tempo real! (Total gravado nesta rodada: {contador_salvos})")
-            bloco_acumulador = []  # Limpa o bloco com sucesso após gravar
+            # Envia o lote e captura o retorno para diagnóstico detalhado
+            resposta = supabase.table("historico_precos").insert(bloco_acumulador).execute()
+            
+            # Se retornar nulo ou dados vazios sem disparar exception, pode ser bloqueio de RLS
+            if not resposta or not hasattr(resposta, 'data') or not resposta.data:
+                print("⚠️ [Supabase] Atenção: O comando foi enviado, mas o banco retornou uma estrutura vazia.")
+                print("👉 Verifique se as Políticas de Segurança (RLS) da tabela permitem inserção pública ou se a Service Key está correta.")
+            else:
+                contador_salvos += len(bloco_acumulador)
+                print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos em tempo real! (Total gravado nesta rodada: {contador_salvos})")
+            
+            bloco_acumulador = []  # Limpa o bloco da memória
         except Exception as e:
-            print(f"❌ Erro ao salvar bloco intermediário no Supabase: {e}")
+            print(f"❌ ERRO CRÍTICO NO SUPABASE: {e}")
+            print("🛑 Interrompendo execução para diagnóstico do erro acima.")
+            sys.exit(1)  # Força a interrupção imediata da action no primeiro erro
 
 async def raspar_produto_individual(sem, browser, item, idx, total_itens):
     """Roda de forma assíncrona, raspa e joga os dados no acumulador"""
@@ -225,6 +234,7 @@ if __name__ == "__main__":
         arquivo_alvo = f"links_{categoria}.txt"
         print(f"📂 Categoria selecionada via argumento: {categoria.upper()}")
     else:
+        # Padrão busca o arquivo consolidado de links
         arquivo_alvo = "links_multimix.txt"
         print("📂 Nenhuma categoria enviada. Rodando arquivo completo padrão.")
 
