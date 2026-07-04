@@ -26,8 +26,8 @@ ENDERECO_MERCADO = "Rua Marechal Deodoro Centro Petrópolis - RJ"
 BASE_URL = "https://www.emporiomultimix.com.br"
 MAX_CONCURRENT_TASKS = 2
 
-# CONFIGURAÇÃO DE BLOCO (Salvar a cada X produtos para não perder progresso)
-TAMANHO_BLOCO_SALVAMENTO = 50
+# CONFIGURAÇÃO DE BLOCO (Salvar a cada 100 produtos em tempo real)
+TAMANHO_BLOCO_SALVAMENTO = 100
 bloco_acumulador = []
 lock_banco = asyncio.Lock()  # Garante segurança nas operações assíncronas
 contador_salvos = 0
@@ -136,7 +136,6 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             valor = extrair_valor_numerico(preco_txt)
             print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
-            # AJUSTE: Campos mapeados perfeitamente com nome, endereço isolado e preço
             dados_produto = {
                 "mercado": NOME_MERCADO,
                 "endereco": ENDERECO_MERCADO,
@@ -146,6 +145,10 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             }
 
             bloco_acumulador.append(dados_produto)
+            
+            # 🔥 SALVAMENTO DIRETOR: Se atingir 100 itens pendentes na memória, limpa e envia imediatamente
+            if len(bloco_acumulador) >= TAMANHO_BLOCO_SALVAMENTO:
+                await enviar_bloco_para_supabase()
             
         except Exception as e:
             print(f"❌ [{idx}/{total_itens}] Erro no item {nome[:25]}... | {str(e)[:40]}")
@@ -164,7 +167,6 @@ async def realizar_raspagem_async(nome_arquivo):
     
     print(f"\n🔍 [Memória] Verificando o que já foi coletado hoje ({hoje_str}) no Supabase...")
     
-    # CORREÇÃO: Alinhado para puxar a coluna correta 'criado_em'
     urls_ja_coletadas = set()
     try:
         resposta = supabase.table("historico_precos") \
@@ -189,7 +191,7 @@ async def realizar_raspagem_async(nome_arquivo):
         print("🎉 Todos os links do arquivo já foram processados e salvos hoje! Nada para fazer.")
         return
 
-    print(f"\n🚀 {NOME_MERCADO} (Modo Inteligente - Continuando de onde parou)")
+    print(f"\n🚀 {NOME_MERCADO} (Modo Inteligente - Fluxo de Injeção Rápida)")
     print(f"Alvo: {nome_arquivo} | Restantes para processar: {total_itens} de {total_original}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
@@ -200,19 +202,18 @@ async def realizar_raspagem_async(nome_arquivo):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         
-        for i in range(0, total_itens, TAMANHO_BLOCO_SALVAMENTO):
-            grupo_atual = itens_para_rodar[i:i + TAMANHO_BLOCO_SALVAMENTO]
-            print(f"\n📦 Iniciando lote de {i+1} até {min(i + TAMANHO_BLOCO_SALVAMENTO, total_itens)}...")
+        # Gera o lote completo de links contínuos
+        tarefas = [
+            raspar_produto_individual(sem, browser, item, idx, total_itens)
+            for idx, item in enumerate(itens_para_rodar, start=1)
+        ]
+        
+        # Executa de 2 em 2 liberando salvamentos automáticos a cada 100 itens atingidos
+        await asyncio.gather(*tarefas)
             
-            tarefas = [
-                raspar_produto_individual(sem, browser, item, idx, total_itens)
-                for idx, item in enumerate(grupo_atual, start=i + 1)
-            ]
-            
-            await asyncio.gather(*tarefas)
-            
-            if bloco_acumulador:
-                await enviar_bloco_para_supabase()
+        # Garante a injeção do bloco final restante (sobras menores que 100)
+        if bloco_acumulador:
+            await enviar_bloco_para_supabase()
                 
         await browser.close()
         
