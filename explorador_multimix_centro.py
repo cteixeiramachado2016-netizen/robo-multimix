@@ -1,5 +1,6 @@
 import time
 import requests
+import os
 from bs4 import BeautifulSoup
 
 # 1. Lista de categorias/sessões reais do Multimix Centro para o mapeamento
@@ -26,7 +27,7 @@ categorias = [
 ]
 
 links_unicos = set()
-arquivo_saida = "links_multimix.txt"  # Ajustado para o padrão do projeto
+arquivo_saida = "links_multimix.txt"  # Ajustado fixo para alimentar o meu_robo.py
 
 print("🚀 Iniciando varredura otimizada no explorador_multimix_centro.py")
 
@@ -34,7 +35,6 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-# Contador global de páginas acessadas para o log
 total_paginas_processadas = 0
 
 for idx, cat in enumerate(categorias, start=1):
@@ -47,36 +47,37 @@ for idx, cat in enumerate(categorias, start=1):
         print(f"🔄 [{total_paginas_processadas}] Conectando em: {url}")
         
         try:
-            response = requests.get(url, headers=headers, timeout=15)
+            response = requests.get(url, headers=headers, timeout=20)
             
-            # Se a página retornar erro ou não existir, encerra a categoria
+            # Se a página retornar erro (Ex: 404), encerra a paginação desta categoria
             if response.status_code != 200:
                 print(f"   ↳ 🛑 Status {response.status_code}. Fim das páginas desta categoria.")
                 break
                 
             soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # ATENÇÃO SELETOR: Buscando as tags 'a' de produto. 
-            # O código analisa os links que contêm a estrutura de produto do site
             links_tags = soup.find_all('a', href=True)
             
             links_pagina = []
             for tag in links_tags:
-                href = tag['href']
-                # Filtro para capturar apenas links que sejam de produtos internos
-                if "/produto/" in href or "-p" in href: # Ajuste o termo se o padrão de URL de produto for diferente
-                    if not href.startswith('http'):
-                        href = f"https://www.emporiomultimix.com.br{href}"
-                    links_pagina.append(href)
+                href = tag['href'].strip()
+                
+                # Filtro inteligente para capturar links internos de produtos
+                if "/produto/" in href or "-p" in href:
+                    # Padroniza salvando apenas a rota limpa (o meu_robo.py monta o domínio se precisar)
+                    if href.startswith("https://www.emporiomultimix.com.br"):
+                        href = href.replace("https://www.emporiomultimix.com.br", "")
+                    
+                    if href.startswith("/"):
+                        links_pagina.append(href)
             
-            # Remove duplicados da própria página antes de validar
+            # Remove duplicados da página atual
             links_pagina = list(set(links_pagina))
             
             if not links_pagina:
-                print("   ↳ ⚠️ Nenhum link extraído. Paginação dinâmica encerrada para esta seção.")
-                break # Sai do loop 'while' da categoria e vai para a próxima
+                print("   ↳ ⚠️ Nenhum link de produto extraído. Mudança de padrão ou fim da seção.")
+                break
             
-            # Armazena no set global do robô
+            # Armazena no set principal
             tamanho_antes = len(links_unicos)
             for link in links_pagina:
                 links_unicos.add(link)
@@ -85,18 +86,24 @@ for idx, cat in enumerate(categorias, start=1):
             print(f"   ↳ ✅ Sucesso: +{novos_links} links únicos adicionados (Total acumulado: {len(links_unicos)}).")
             
             page += 1
-            time.sleep(0.5) # Delay seguro contra bloqueios
+            time.sleep(1.0) # Delay de 1 segundo (Ideal para ambiente cloud do GitHub Actions não ser bloqueado)
             
         except Exception as e:
-            print(f"   ↳ ❌ Erro de conexão/processamento: {e}")
+            print(f"   ↳ ❌ Erro de conexão/processamento: {str(e)[:50]}")
             break
 
-# 3. Gravação definitiva e limpa no final do pipeline
-print("\n💾 Finalizando e salvando dados...")
-with open(arquivo_saida, "w", encoding="utf-8") as f:
-    for link in sorted(links_unicos):
-        f.write(f"{link}\n")
+# 3. Gravação definitiva e inteligente no final do pipeline
+print("\n💾 Finalizando e checando integridade dos dados...")
 
-print(f"Arquivo de saída gerado com sucesso: '{arquivo_saida}'")
-print(f"📦 Total de {len(links_unicos)} links de produtos únicos armazenados!")
+# 🛡️ TRAVA DE SEGURANÇA: Se por algum problema de conexão o robô ler 0 links, 
+# ele NÃO joga por cima do arquivo antigo para não apagar o seu arquivo diário ativo.
+if len(links_unicos) > 0:
+    with open(arquivo_saida, "w", encoding="utf-8") as f:
+        for link in sorted(links_unicos):
+            f.write(f"{link}\n")
+    print(f"✅ Arquivo de saída gerado com sucesso: '{arquivo_saida}'")
+    print(f"📦 Total de {len(links_unicos)} links de produtos únicos armazenados!")
+else:
+    print("❌ Falha crítica: Nenhum link foi capturado nesta rodada. O arquivo antigo foi preservado por segurança.")
+
 print("🏁 Fim do pipeline de extração para o Multimix Centro!")
