@@ -144,11 +144,11 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             valor = extrair_valor_numerico(preco_txt)
             print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
-            # ✨ ESTRUTURA ULTRA LIMPA ATUALIZADA: Alinhada com os campos exatos do Supabase
+            # ✨ ESTRUTURA ULTRA LIMPA: Relaciona diretamente o produto ao MERCADO_ID fixo.
             dados_produto = {
                 "produto": nome,
                 "valor_numerico": valor,
-                "mercado_id": MERCADO_ID  # Ligação direta com ID da tabela mercados
+                "mercado_id": MERCADO_ID  
             }
 
             bloco_acumulador.append(dados_produto)
