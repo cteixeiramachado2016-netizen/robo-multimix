@@ -2,7 +2,6 @@ import os
 import re
 import sys  # Captura a sessão via linha de comando
 import asyncio
-from datetime import datetime, date
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
@@ -20,9 +19,10 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 # Inicializa o cliente do Supabase
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- CONFIGURAÇÕES DE ARQUIVOS E SESSÕES ---
-NOME_MERCADO = "Mercado Multimix"
-ENDERECO_MERCADO = "Rua Marechal Deodoro Centro Petrópolis - RJ"
+# --- CONFIGURAÇÕES DE BANCO E RASPAGEM ---
+# 🔑 IMPORTANTE: ID único correspondente à tabela 'mercados' do Supabase
+MERCADO_ID = 1  
+
 BASE_URL = "https://www.emporiomultimix.com.br"
 MAX_CONCURRENT_TASKS = 2
 
@@ -80,29 +80,28 @@ def ler_dados_do_arquivo(nome_arquivo):
     return produtos_unicos
 
 async def enviar_bloco_para_supabase():
-    """Função interna para descarregar o bloco atual no banco de dados com diagnóstico"""
+    """Função interna para descarregar o bloco atual no banco de dados com estrutura limpa"""
     global bloco_acumulador, contador_salvos
     if not bloco_acumulador:
         return
 
     async with lock_banco:
         try:
-            # Envia o lote e captura o retorno para diagnóstico detalhado
+            # Envia o lote otimizado para o Supabase
             resposta = supabase.table("historico_precos").insert(bloco_acumulador).execute()
             
-            # Se retornar nulo ou dados vazios sem disparar exception, pode ser bloqueio de RLS
             if not resposta or not hasattr(resposta, 'data') or not resposta.data:
                 print("⚠️ [Supabase] Atenção: O comando foi enviado, mas o banco retornou uma estrutura vazia.")
-                print("👉 Verifique se as Políticas de Segurança (RLS) da tabela permitem inserção pública ou se a Service Key está correta.")
+                print("👉 Verifique as políticas de RLS ou se a tabela possui restrições.")
             else:
                 contador_salvos += len(bloco_acumulador)
-                print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos em tempo real! (Total gravado nesta rodada: {contador_salvos})")
+                print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos! (Total gravado nesta rodada: {contador_salvos})")
             
             bloco_acumulador = []  # Limpa o bloco da memória
         except Exception as e:
             print(f"❌ ERRO CRÍTICO NO SUPABASE: {e}")
             print("🛑 Interrompendo execução para diagnóstico do erro acima.")
-            sys.exit(1)  # Força a interrupção imediata da action no primeiro erro
+            sys.exit(1)
 
 async def raspar_produto_individual(sem, browser, item, idx, total_itens):
     """Roda de forma assíncrona, raspa e joga os dados no acumulador"""
@@ -121,7 +120,7 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             response = await page.goto(url, wait_until="domcontentloaded")
             
             if response and response.status >= 500:
-                print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor do mercado.")
+                print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor.")
                 return
 
             tag_h1 = page.locator("h1").first
@@ -145,17 +144,16 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             valor = extrair_valor_numerico(preco_txt)
             print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
-            # 🛠️ AJUSTADO: Campo 'endereco' removido para evitar o erro PGRST204 do Supabase
+            # ✨ ESTRUTURA ULTRA LIMPA ATUALIZADA: Alinhada com os campos exatos do Supabase
             dados_produto = {
-                "mercado": NOME_MERCADO,
                 "produto": nome,
                 "valor_numerico": valor,
-                "url_produto": url
+                "mercado_id": MERCADO_ID  # Ligação direta com ID da tabela mercados
             }
 
             bloco_acumulador.append(dados_produto)
             
-            # 🔥 SALVAMENTO DIRETOR: Se atingir 100 itens pendentes na memória, limpa e envia imediatamente
+            # Se atingir o tamanho do bloco na memória, envia imediatamente
             if len(bloco_acumulador) >= TAMANHO_BLOCO_SALVAMENTO:
                 await enviar_bloco_para_supabase()
             
@@ -166,42 +164,15 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             await context.close()
 
 async def realizar_raspagem_async(nome_arquivo):
-    itens_arquivo = ler_dados_do_arquivo(nome_arquivo)
-    if not itens_arquivo: 
+    itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
+    if not itens_para_rodar: 
         print("⚠️ Nenhum produto encontrado no arquivo.")
         return
 
-    total_original = len(itens_arquivo)
-    hoje_str = date.today().isoformat()
-    
-    print(f"\n🔍 [Memória] Verificando o que já foi coletado hoje ({hoje_str}) no Supabase...")
-    
-    urls_ja_coletadas = set()
-    try:
-        resposta = supabase.table("historico_precos") \
-            .select("url_produto") \
-            .gte("criado_em", f"{hoje_str}T00:00:00") \
-            .execute()
-        
-        if resposta.data:
-            urls_ja_coletadas = {row["url_produto"] for row in resposta.data if row.get("url_produto")}
-            print(f"💡 Encontrados {len(urls_ja_coletadas)} produtos já processados hoje.")
-    except Exception as e:
-        print(f"⚠️ Não foi possível consultar o histórico (rodando do zero): {e}")
-
-    itens_para_rodar = [item for item in itens_arquivo if item["url"] not in urls_ja_coletadas]
     total_itens = len(itens_para_rodar)
-    itens_pula = total_original - total_itens
 
-    if itens_pula > 0:
-        print(f"⏭️ {itens_pula} links ignorados (já estavam salvos de execuções anteriores de hoje).")
-        
-    if total_itens == 0:
-        print("🎉 Todos os links do arquivo já foram processados and salvos hoje! Nada para fazer.")
-        return
-
-    print(f"\n🚀 {NOME_MERCADO} (Modo Inteligente - Fluxo de Injeção Rápida)")
-    print(f"Alvo: {nome_arquivo} | Restantes para processar: {total_itens} de {total_original}")
+    print(f"\n🚀 Iniciando Varredura (ID do Mercado Alvo: {MERCADO_ID})")
+    print(f"Alvo: {nome_arquivo} | Itens para processar: {total_itens}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
     print("-" * 60)
@@ -211,16 +182,14 @@ async def realizar_raspagem_async(nome_arquivo):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         
-        # Gera o lote completo de links contínuos
         tarefas = [
             raspar_produto_individual(sem, browser, item, idx, total_itens)
             for idx, item in enumerate(itens_para_rodar, start=1)
         ]
         
-        # Executa de 2 em 2 liberando salvamentos automáticos a cada 100 itens atingidos
         await asyncio.gather(*tarefas)
             
-        # Garante a injeção do bloco final restante (sobras menores que 100)
+        # Garante a injeção do bloco final restante
         if bloco_acumulador:
             await enviar_bloco_para_supabase()
                 
@@ -234,7 +203,6 @@ if __name__ == "__main__":
         arquivo_alvo = f"links_{categoria}.txt"
         print(f"📂 Categoria selecionada via argumento: {categoria.upper()}")
     else:
-        # Padrão busca o arquivo consolidado de links
         arquivo_alvo = "links_multimix.txt"
         print("📂 Nenhuma categoria enviada. Rodando arquivo completo padrão.")
 
