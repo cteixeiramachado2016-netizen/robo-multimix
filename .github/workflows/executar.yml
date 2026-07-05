@@ -2,8 +2,9 @@ name: Pipeline de Preços - Multimix Centro
 
 on:
   schedule:
-    # Configurado para rodar todo dia às 05:00 da manhã (Horário de Brasília / 08:00 UTC)
-    - cron: '0 8 * * *'
+    # 🕒 Configurado para rodar todo dia às 04:00 da manhã (Horário de Brasília / 07:00 UTC)
+    # Roda exatamente 1 hora após o Supabase limpar o banco de dados (que limpa às 03:00)
+    - cron: '0 7 * * *'
   # Permite clicar no botão para rodar manualmente sempre que quiser
   workflow_dispatch:
 
@@ -15,10 +16,11 @@ jobs:
   executar-robo:
     runs-on: ubuntu-latest
 
-    # Define as variáveis de ambiente para todo o Job (disponível para todos os scripts)
+    # Define as variáveis de ambiente para todo o Job
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }} # 🔥 Adicionado para garantir a inserção em lotes
 
     steps:
       - name: 1. Baixar código do repositório
@@ -46,16 +48,16 @@ jobs:
       - name: 6. Executar Robô de Preços
         run: python meu_robo.py
 
-      - name: 7. Salvar dados atualizados no GitHub
+      - name: 7. Salvar dados atualizados no GitHub (Caso o txt de links mude)
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add precos_mercado.xlsx historico_precos.txt produtos_multimix_centro.txt links_multimix.txt || true
+          git add produtos_multimix_centro.txt links_multimix.txt || true
           
           # Verifica se há alterações reais antes de tentar commitar
           if ! git diff --cached --quiet; then
             git commit -m "Automação: Atualização diária de preços [Nova Build]"
             git push
           else
-            echo "Nenhuma mudança detectada nos arquivos hoje."
+            echo "Nenhuma mudança detectada nos arquivos de links hoje."
           fi
