@@ -2,8 +2,8 @@ name: Pipeline de Preços - Multimix Centro
 
 on:
   schedule:
-    # 🕒 Configurado para rodar todo dia às 04:00 da manhã (Horário de Brasília / 07:00 UTC)
-    # Roda exatamente 1 hora após o Supabase limpar o banco de dados (que limpa às 03:00)
+    # 🕒 Configurado para disparar todo dia às 04:00 da manhã (Horário de Brasília / 07:00 UTC)
+    # Nota: O GitHub Actions pode atrasar o início dependendo da fila de servidores deles.
     - cron: '0 7 * * *'
   # Permite clicar no botão para rodar manualmente sempre que quiser
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }} # 🔥 Adicionado para garantir a inserção em lotes
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }} # 🔥 Garantia de inserção em lotes
 
     steps:
       - name: 1. Baixar código do repositório
@@ -34,7 +34,7 @@ jobs:
       - name: 3. Instalar dependências do Python
         run: |
           python -m pip install --upgrade pip
-          pip install playwright pandas openpyxl requests beautifulsoup4 python-dotenv supabase
+          pip install playwright pandas openpyxl requests beautifulsoup4 python-dotenv supabase pytz
 
       - name: 4. Instalar Navegadores e Dependências do Sistema
         run: |
