@@ -2,11 +2,13 @@ import os
 import re
 import sys  # Captura a sessão via linha de comando
 import asyncio
+from datetime import datetime
+import pytz  # Certifique-se de que está no seu requirements.txt ou setup do workflow
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
 
-# 1. Carrega as chaves do seu arquivo personalizado e organizado
+# 1. Carrega as chaves do seu arquivo personalizado e organized
 load_dotenv("credenciais_supabase.env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -182,14 +184,21 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             await context.close()
 
 async def realizar_raspagem_async(nome_arquivo):
+    # Registra e exibe a hora exata do início no fuso de Brasília para auditoria do GitHub Actions
+    fuso_brasilia = pytz.timezone('America/Sao_Paulo')
+    hora_inicio = datetime.now(fuso_brasilia).strftime('%d/%m/%Y %H:%M:%S')
+    
     itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
     if not itens_para_rodar: 
+        print(f"⏰ [INFO] Tentativa de início em: {hora_inicio}")
         print("⚠️ Nenhum produto encontrado no arquivo.")
         return
 
     total_itens = len(itens_para_rodar)
 
-    print(f"\n🚀 Iniciando Varredura Otimizada (ID do Mercado Alvo: {MERCADO_ID})")
+    print("-" * 60)
+    print(f"⏰ [INFO] O robô começou a rodar oficialmente em: {hora_inicio}")
+    print(f"🚀 Iniciando Varredura Otimizada (ID do Mercado Alvo: {MERCADO_ID})")
     print(f"Alvo: {nome_arquivo} | Itens para processar: {total_itens}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
