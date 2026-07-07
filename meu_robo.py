@@ -20,7 +20,6 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- CONFIGURAÇÕES DE BANCO E RASPAGEM ---
-# 🔑 IMPORTANTE: ID único correspondente à tabela 'mercados' do Supabase
 MERCADO_ID = 1  
 
 BASE_URL = "https://www.emporiomultimix.com.br"
@@ -42,10 +41,18 @@ def extrair_valor_numerico(texto_preco):
         return 0.0
 
 def extrair_nome_pelo_link(url):
+    """
+    Remove parâmetros de busca (?...) e limpa o ID numérico final do e-commerce (ex: -131366)
+    para que o nome fique amigável e limpo no banco de dados.
+    """
     try:
         parte_final = url.split('/')[-1]
         nome_limpo = parte_final.split('?')[0]
-        nome_amigavel = nome_limpo.replace('-', ' ').title()
+        
+        # Expressão regular para remover hífens seguidos de números no final da string (o ID do mercado)
+        nome_sem_id = re.sub(r'-\d+$', '', nome_limpo)
+        
+        nome_amigavel = nome_sem_id.replace('-', ' ').title()
         return nome_amigavel
     except:
         return "Produto Sem Nome"
@@ -87,7 +94,6 @@ async def enviar_bloco_para_supabase():
 
     async with lock_banco:
         try:
-            # Envia o lote otimizado para o Supabase
             resposta = supabase.table("historico_precos").insert(bloco_acumulador).execute()
             
             if not resposta or not hasattr(resposta, 'data') or not resposta.data:
@@ -114,18 +120,21 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
         page = await context.new_page()
-        page.set_default_timeout(20000)
+        # Tempo limite estendido para garantir o carregamento de scripts pesados do mercado
+        page.set_default_timeout(25000)
         
         try:
-            response = await page.goto(url, wait_until="domcontentloaded")
+            # Mudado de domcontentloaded para 'load' para garantir que os scripts de preço rodem antes da leitura
+            response = await page.goto(url, wait_until="load")
             
             if response and response.status >= 500:
                 print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor.")
                 return
 
+            # Captura o nome real de dentro da tag H1 do site
             tag_h1 = page.locator("h1").first
             try:
-                await tag_h1.wait_for(state="visible", timeout=4000)
+                await tag_h1.wait_for(state="visible", timeout=5000)
                 nome_real = await tag_h1.inner_text()
                 nome_real = nome_real.strip()
                 if nome_real:
@@ -133,18 +142,28 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             except:
                 pass
 
+            # Limpa o nome capturado caso o H1 também traga o ID
+            nome = re.sub(r'\s*\d+$', '', nome).strip()
+
             preco_txt = "R$ 0,00"
             try:
-                elemento_preco = page.locator("text=R$").first
+                # Seletor direcionado: tenta pegar a classe específica do preço ou seletor de forte
+                # Isso impede que ele capture R$ falsos em banners ou cabeçalhos
+                elemento_preco = page.locator(".precoPor, .price, strong:has-text('R$'), text=R$").first
+                await elemento_preco.wait_for(state="visible", timeout=5000)
                 texto_interno = await elemento_preco.inner_text()
                 preco_txt = texto_interno.strip().split('\n')[0]
             except: 
                 pass
 
             valor = extrair_valor_numerico(preco_txt)
-            print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
-            # ✨ ESTRUTURA ULTRA LIMPA: Relaciona diretamente o produto ao MERCADO_ID fixo.
+            # Se capturar como 0.00, loga como um aviso para acompanhamento na gôndola
+            if valor == 0.0:
+                print(f"⚠️ [{idx}/{total_itens}] Alerta Gôndola: {nome[:35]:<35} | Valor veio zerado.")
+            else:
+                print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
+            
             dados_produto = {
                 "produto": nome,
                 "valor_numerico": valor,
@@ -153,7 +172,6 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
 
             bloco_acumulador.append(dados_produto)
             
-            # Se atingir o tamanho do bloco na memória, envia imediatamente
             if len(bloco_acumulador) >= TAMANHO_BLOCO_SALVAMENTO:
                 await enviar_bloco_para_supabase()
             
@@ -171,7 +189,7 @@ async def realizar_raspagem_async(nome_arquivo):
 
     total_itens = len(itens_para_rodar)
 
-    print(f"\n🚀 Iniciando Varredura (ID do Mercado Alvo: {MERCADO_ID})")
+    print(f"\n🚀 Iniciando Varredura Otimizada (ID do Mercado Alvo: {MERCADO_ID})")
     print(f"Alvo: {nome_arquivo} | Itens para processar: {total_itens}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
@@ -189,7 +207,6 @@ async def realizar_raspagem_async(nome_arquivo):
         
         await asyncio.gather(*tarefas)
             
-        # Garante a injeção do bloco final restante
         if bloco_acumulador:
             await enviar_bloco_para_supabase()
                 
