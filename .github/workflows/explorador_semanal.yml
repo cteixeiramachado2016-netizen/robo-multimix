@@ -2,7 +2,8 @@ name: Pipeline Semanal - Explorador de Links
 
 on:
   schedule:
-    # Configurado para rodar todo domingo às 01:00 da manhã (Horário de Brasília / 04:00 UTC)
+    # 🕒 Configurado para disparar todo domingo às 01:00 da manhã (Horário de Brasília / 04:00 UTC)
+    # Nota: O agendador do GitHub pode sofrer atrasos dependendo do volume de servidores ocupados.
     - cron: '0 4 * * 0'
   # Permite que você clique no botão para rodar manualmente se quiser atualizar os links na hora
   workflow_dispatch:
@@ -27,7 +28,7 @@ jobs:
       - name: 3. Instalar dependências do Python
         run: |
           python -m pip install --upgrade pip
-          pip install playwright pandas openpyxl requests beautifulsoup4 python-dotenv
+          pip install playwright pandas openpyxl requests beautifulsoup4 python-dotenv supabase
 
       - name: 4. Instalar Navegadores e Dependências do Sistema
         run: |
