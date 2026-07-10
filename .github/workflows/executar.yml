@@ -1,9 +1,8 @@
-name: Pipeline de Preços - Multimix Centro
+name: Executar meu_robo.py - Multimix Centro
 
 on:
   schedule:
     # 🕒 Configurado para disparar todo dia às 04:00 da manhã (Horário de Brasília / 07:00 UTC)
-    # Nota: O GitHub Actions pode atrasar o início dependendo da fila de servidores deles.
     - cron: '0 7 * * *'
   # Permite clicar no botão para rodar manualmente sempre que quiser
   workflow_dispatch:
@@ -41,22 +40,18 @@ jobs:
           playwright install chromium
           playwright install-deps chromium
 
-      # DESATIVADO: O explorador foi comentado com '#' para não rodar todo dia e não travar o processo
-      # - name: 5. Executar Explorador de Links
-      #   run: python explorador_multimix_centro.py
-
-      - name: 6. Executar Robô de Preços
+      - name: 5. Executar Robô de Preços (meu_robo.py)
         run: python meu_robo.py
 
-      - name: 7. Salvar dados atualizados no GitHub (Caso o txt de links mude)
+      - name: 6. Salvar dados atualizados no GitHub (Caso o arquivo de links mude)
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add produtos_multimix_centro.txt links_multimix.txt || true
+          git add links_multimix.txt || true
           
           # Verifica se há alterações reais antes de tentar commitar
           if ! git diff --cached --quiet; then
-            git commit -m "Automação: Atualização diária de preços [Nova Build]"
+            git commit -m "Automação: Atualização diária de preços via meu_robo.py"
             git push
           else
             echo "Nenhuma mudança detectada nos arquivos de links hoje."
