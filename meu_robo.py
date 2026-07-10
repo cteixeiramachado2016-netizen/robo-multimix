@@ -2,7 +2,7 @@ import os
 import re
 import sys  # Captura a sessão via linha de comando
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone  # <--- Incluído timezone nativo para o formato do Supabase
 import pytz  # Certifique-se de que está no seu requirements.txt ou setup do workflow
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright
@@ -22,7 +22,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- CONFIGURAÇÕES DE BANCO E RASPAGEM ---
-MERCADO_ID = 1  
+MERCADO_NOME = "Emporio Multimix"  # <--- Alterado para o nome em texto de acordo com a sua tabela
 
 BASE_URL = "https://www.emporiomultimix.com.br"
 MAX_CONCURRENT_TASKS = 2
@@ -69,12 +69,12 @@ def ler_dados_do_arquivo(nome_arquivo):
     
     with open(nome_arquivo, 'r', encoding='utf-8') as f:
         for linha in f:
-            link = linha.strip()
-            if link and not link.startswith("#"):
-                if not link.startswith("http"):
-                    url_completa = BASE_URL + link if link.startswith("/") else BASE_URL + "/" + link
+            linha = linha.strip()
+            if linha and not linha.startswith("#"):
+                if not linha.startswith("http"):
+                    url_completa = BASE_URL + linha if linha.startswith("/") else BASE_URL + "/" + linha
                 else:
-                    url_completa = link
+                    url_completa = linha
                 
                 nome_produto = extrair_nome_pelo_link(url_completa)
                 produtos_links.append({"nome": nome_produto, "url": url_completa})
@@ -166,10 +166,14 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             else:
                 print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
+            # --- MUDANÇA REALIZADA AQUI: Estrutura idêntica à tabela historico_precos ---
             dados_produto = {
+                "mercado": MERCADO_NOME,
                 "produto": nome,
+                "preco_texto": preco_txt,
                 "valor_numerico": valor,
-                "mercado_id": MERCADO_ID  
+                "url_produto": url,
+                "data_robo": datetime.now(timezone.utc).isoformat()  # <--- Captura a data/hora exata em formato ISO UTC
             }
 
             bloco_acumulador.append(dados_produto)
@@ -198,7 +202,7 @@ async def realizar_raspagem_async(nome_arquivo):
 
     print("-" * 60)
     print(f"⏰ [INFO] O robô começou a rodar oficialmente em: {hora_inicio}")
-    print(f"🚀 Iniciando Varredura Otimizada (ID do Mercado Alvo: {MERCADO_ID})")
+    print(f"🚀 Iniciando Varredura Otimizada (Mercado Alvo: {MERCADO_NOME})")
     print(f"Alvo: {nome_arquivo} | Itens para processar: {total_itens}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
