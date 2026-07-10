@@ -22,7 +22,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- CONFIGURAÇÕES DE BANCO E RASPAGEM ---
-MERCADO_NOME = "Emporio Multimix"  # <--- Alterado para o nome em texto de acordo com a sua tabela
+MERCADO_ID = 1  # 1 = Centro (Os próximos distritos usarão IDs como 2, 3, 4, etc.)
 
 BASE_URL = "https://www.emporiomultimix.com.br"
 MAX_CONCURRENT_TASKS = 2
@@ -166,14 +166,12 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             else:
                 print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
-            # --- MUDANÇA REALIZADA AQUI: Estrutura idêntica à tabela historico_precos ---
+            # --- AJUSTADO: Dicionário mapeado exatamente à sua estrutura DDL no Supabase ---
             dados_produto = {
-                "mercado": MERCADO_NOME,
                 "produto": nome,
-                "preco_texto": preco_txt,
                 "valor_numerico": valor,
-                "url_produto": url,
-                "data_robo": datetime.now(timezone.utc).isoformat()  # <--- Captura a data/hora exata em formato ISO UTC
+                "mercado_id": MERCADO_ID,  # Chave estrangeira (BIGINT) vinculada ao id da tabela mercados
+                "data_robo": datetime.now(timezone.utc).isoformat()  # Registra a data/hora em formato ISO com fuso
             }
 
             bloco_acumulador.append(dados_produto)
@@ -202,7 +200,7 @@ async def realizar_raspagem_async(nome_arquivo):
 
     print("-" * 60)
     print(f"⏰ [INFO] O robô começou a rodar oficialmente em: {hora_inicio}")
-    print(f"🚀 Iniciando Varredura Otimizada (Mercado Alvo: {MERCADO_NOME})")
+    print(f"🚀 Iniciando Varredura Otimizada (ID do Distrito Alvo: {MERCADO_ID})")
     print(f"Alvo: {nome_arquivo} | Itens para processar: {total_itens}")
     print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
     print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
