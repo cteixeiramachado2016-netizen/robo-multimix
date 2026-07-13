@@ -27,7 +27,7 @@ categorias = [
 ]
 
 links_unicos = set()
-arquivo_saida = "links_multimix.txt"  # Ajustado fixo para alimentar o meu_robo.py
+arquivo_saida = "links_multimix.txt"
 
 print("🚀 Iniciando varredura otimizada no explorador_multimix_centro.py")
 
@@ -39,6 +39,7 @@ total_paginas_processadas = 0
 
 for idx, cat in enumerate(categorias, start=1):
     page = 1
+    paginas_sem_novidades = 0  # <--- NOVA TRAVA DE SEGURANÇA
     print(f"\n📁 Processando categoria [{idx}/{len(categorias)}]: {cat}")
     
     while True:
@@ -49,7 +50,6 @@ for idx, cat in enumerate(categorias, start=1):
         try:
             response = requests.get(url, headers=headers, timeout=20)
             
-            # Se a página retornar erro (Ex: 404), encerra a paginação desta categoria
             if response.status_code != 200:
                 print(f"   ↳ 🛑 Status {response.status_code}. Fim das páginas desta categoria.")
                 break
@@ -61,23 +61,20 @@ for idx, cat in enumerate(categorias, start=1):
             for tag in links_tags:
                 href = tag['href'].strip()
                 
-                # Filtro inteligente para capturar links internos de produtos
                 if "/produto/" in href or "-p" in href:
-                    # Padroniza salvando apenas a rota limpa (o meu_robo.py monta o domínio se precisar)
                     if href.startswith("https://www.emporiomultimix.com.br"):
                         href = href.replace("https://www.emporiomultimix.com.br", "")
                     
                     if href.startswith("/"):
                         links_pagina.append(href)
             
-            # Remove duplicados da página atual
             links_pagina = list(set(links_pagina))
             
             if not links_pagina:
-                print("   ↳ ⚠️ Nenhum link de produto extraído. Mudança de padrão ou fim da seção.")
+                print("   ↳ ⚠️ Nenhum link de produto extraído. Fim da seção.")
                 break
             
-            # Armazena no set principal
+            # Medição de novos links reais injetados
             tamanho_antes = len(links_unicos)
             for link in links_pagina:
                 links_unicos.add(link)
@@ -85,18 +82,27 @@ for idx, cat in enumerate(categorias, start=1):
             novos_links = len(links_unicos) - tamanho_antes
             print(f"   ↳ ✅ Sucesso: +{novos_links} links únicos adicionados (Total acumulado: {len(links_unicos)}).")
             
+            # <--- AJUSTE DA ENGRENAGEM: Se não trouxe nada de novo, liga o alerta
+            if novos_links == 0:
+                paginas_sem_novidades += 1
+            else:
+                paginas_sem_novidades = 0 # Reseta se achar algo novo
+                
+            # Se por 2 páginas seguidas o site repetiu dados ou trouxe zero novidades, a paginação acabou
+            if paginas_sem_novidades >= 2:
+                print("   ↳ 🛑 Parada preventiva: Conteúdo repetido/esgotado. Pulando categoria.")
+                break
+            
             page += 1
-            time.sleep(1.0) # Delay de 1 segundo (Ideal para ambiente cloud do GitHub Actions não ser bloqueado)
+            time.sleep(1.0)
             
         except Exception as e:
             print(f"   ↳ ❌ Erro de conexão/processamento: {str(e)[:50]}")
             break
 
-# 3. Gravação definitiva e inteligente no final do pipeline
+# 3. Gravação definitiva
 print("\n💾 Finalizando e checando integridade dos dados...")
 
-# 🛡️ TRAVA DE SEGURANÇA: Se por algum problema de conexão o robô ler 0 links, 
-# ele NÃO joga por cima do arquivo antigo para não apagar o seu arquivo diário ativo.
 if len(links_unicos) > 0:
     with open(arquivo_saida, "w", encoding="utf-8") as f:
         for link in sorted(links_unicos):
