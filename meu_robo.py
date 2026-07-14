@@ -1,192 +1,473 @@
 import os
+
 import re
-import sys
+
+import sys  # Captura a sessão via linha de comando
+
 import asyncio
-from datetime import datetime, timezone
-import pytz
+
+from datetime import datetime, timezone  # <--- Incluído timezone nativo para o formato do Supabase
+
+import pytz  # Certifique-se de que está no seu requirements.txt ou setup do workflow
+
+from dotenv import load_dotenv
+
 from playwright.async_api import async_playwright
+
 from supabase import create_client, Client
 
-# --- SUAS CREDENCIAIS OFICIAIS DO SUPABASE ---
-SUPABASE_URL = "https://uqovffvxtskmbycldmwd.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb3ZmZnZ4dHNrbWJ5Y2xkbXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyNTgzMTEsImV4cCI6MjA1NDgzNDMxMX0.r7l72S69FidA2_D9_B98T5_vC_S-3vWreV-rGz6-RkQ"
+
+
+# 1. Carrega as chaves do seu arquivo personalizado e organized
+
+load_dotenv("credenciais_supabase.env")
+
+
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
+
+
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+
+    print("❌ Erro: Chaves do Supabase não encontradas!")
+
+    exit(1)
+
+
+
+# Inicializa o cliente do Supabase
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- CONFIGURAÇÕES DO SISTEMA ---
-MERCADO_ID = 1  # Centro
-ARQUIVO_FONTE = "links_multimix.txt"  # O arquivo gerado automaticamente pelo Explorador
+
+
+# --- CONFIGURAÇÕES DE BANCO E RASPAGEM ---
+
+MERCADO_ID = 1  # 1 = Centro (Os próximos distritos usarão IDs como 2, 3, 4, etc.)
+
+
+
 BASE_URL = "https://www.emporiomultimix.com.br"
 
-# --- CONTROLE DE CONCORRÊNCIA E LOTES ---
-MAX_CONCURRENT_TASKS = 5  # Abre exatamente de 5 em 5 abas simultâneas
-TAMANHO_LOTE = 100         # Processa e salva no Supabase em blocos de 100 em 100 produtos
-PAUSA_ENTRE_LOTES = 60     # Pausa de 1 minuto (60s) após processar e salvar cada lote de 100
+MAX_CONCURRENT_TASKS = 2
+
+
+
+# CONFIGURAÇÃO DE BLOCO (Salvar a cada 100 produtos em tempo real)
+
+TAMANHO_BLOCO_SALVAMENTO = 100
+
+bloco_acumulador = []
+
+lock_banco = asyncio.Lock()  # Garante segurança nas operações assíncronas
+
+contador_salvos = 0
+
+
 
 def extrair_valor_numerico(texto_preco):
+
     try:
+
         apenas_numeros = re.sub(r'[^\d,.]', '', texto_preco)
+
         if ',' in apenas_numeros:
+
             apenas_numeros = apenas_numeros.replace('.', '').replace(',', '.')
+
         return float(apenas_numeros)
+
     except:
+
         return 0.0
 
+
+
 def extrair_nome_pelo_link(url):
+
+    """
+
+    Remove parâmetros de busca (?...) e limpa o ID numérico final do e-commerce (ex: -131366)
+
+    para que o nome fique amigável e limpo no banco de dados.
+
+    """
+
     try:
+
         parte_final = url.split('/')[-1]
+
         nome_limpo = parte_final.split('?')[0]
+
+        
+
+        # Expressão regular para remover hífens seguidos de números no final da string (o ID do mercado)
+
         nome_sem_id = re.sub(r'-\d+$', '', nome_limpo)
+
+        
+
         nome_amigavel = nome_sem_id.replace('-', ' ').title()
+
         return nome_amigavel
+
     except:
+
         return "Produto Sem Nome"
 
-def ler_links_consolidados():
+
+
+def ler_dados_do_arquivo(nome_arquivo):
+
     produtos_links = []
-    if not os.path.exists(ARQUIVO_FONTE):
-        print(f"❌ Erro Crítico: O arquivo de entrada '{ARQUIVO_FONTE}' não foi encontrado!")
-        sys.exit(1)
+
+    if not os.path.exists(nome_arquivo):
+
+        print(f"❌ Erro: O arquivo '{nome_arquivo}' não foi encontrado!")
+
+        return produtos_links
+
         
-    with open(ARQUIVO_FONTE, 'r', encoding='utf-8') as f:
+
+    print(f"✅ Arquivo de links encontrado: '{nome_arquivo}'")
+
+    
+
+    with open(nome_arquivo, 'r', encoding='utf-8') as f:
+
         for linha in f:
+
             linha = linha.strip()
+
             if linha and not linha.startswith("#"):
+
                 if not linha.startswith("http"):
+
                     url_completa = BASE_URL + linha if linha.startswith("/") else BASE_URL + "/" + linha
+
                 else:
+
                     url_completa = linha
+
                 
+
                 nome_produto = extrair_nome_pelo_link(url_completa)
+
                 produtos_links.append({"nome": nome_produto, "url": url_completa})
+
                     
-    # Remove duplicados mantendo a ordem
+
     urls_vistas = set()
+
     produtos_unicos = []
+
     for p in produtos_links:
+
         if p["url"] not in urls_vistas:
+
             urls_vistas.add(p["url"])
+
             produtos_unicos.append(p)
+
+
 
     return produtos_unicos
 
-async def bloquear_recursos_pesados(route):
-    resource_type = route.request.resource_type
-    if resource_type in ["image", "stylesheet", "font", "media"] or "google" in route.request.url or "facebook" in route.request.url:
-        await route.abort()
-    else:
-        await route.continue_()
 
-async def raspar_produto_individual(sem, context, item, idx, total_itens, lista_acumuladora):
-    """Executa a raspagem de um link respeitando o semáforo limite de 5 abas"""
-    async with sem:
-        url = item["url"]
-        nome = item["nome"]
-        
-        page = await context.new_page()
-        page.set_default_timeout(15000)
-        await page.route("**/*", bloquear_recursos_pesados)
-        
+
+async def enviar_bloco_para_supabase():
+
+    """Função interna para descarregar o bloco atual no banco de dados com estrutura limpa"""
+
+    global bloco_acumulador, contador_salvos
+
+    if not bloco_acumulador:
+
+        return
+
+
+
+    async with lock_banco:
+
         try:
-            response = await page.goto(url, wait_until="domcontentloaded")
+
+            resposta = supabase.table("historico_precos").insert(bloco_acumulador).execute()
+
+            
+
+            if not resposta or not hasattr(resposta, 'data') or not resposta.data:
+
+                print("⚠️ [Supabase] Atenção: O comando foi enviado, mas o banco retornou uma estrutura vazia.")
+
+                print("👉 Verifique as políticas de RLS ou se a tabela possui restrições.")
+
+            else:
+
+                contador_salvos += len(bloco_acumulador)
+
+                print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos! (Total gravado nesta rodada: {contador_salvos})")
+
+            
+
+            bloco_acumulador = []  # Limpa o bloco da memória
+
+        except Exception as e:
+
+            print(f"❌ ERRO CRÍTICO NO SUPABASE: {e}")
+
+            print("🛑 Interrompendo execução para diagnóstico do erro acima.")
+
+            sys.exit(1)
+
+
+
+async def raspar_produto_individual(sem, browser, item, idx, total_itens):
+
+    """Roda de forma assíncrona, raspa e joga os dados no acumulador"""
+
+    global bloco_acumulador
+
+    async with sem:
+
+        url = item["url"]
+
+        nome = item["nome"]
+
+        
+
+        context = await browser.new_context(
+
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+        )
+
+        page = await context.new_page()
+
+        # Tempo limite estendido para garantir o carregamento de scripts pesados do mercado
+
+        page.set_default_timeout(25000)
+
+        
+
+        try:
+
+            # Mudado de domcontentloaded para 'load' para garantir que os scripts de preço rodem antes da leitura
+
+            response = await page.goto(url, wait_until="load")
+
+            
+
             if response and response.status >= 500:
-                print(f"⚠️ [{idx}/{total_itens}] Erro {response.status} no servidor.")
+
+                print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor.")
+
                 return
 
+
+
+            # Captura o nome real de dentro da tag H1 do site
+
             tag_h1 = page.locator("h1").first
+
             try:
-                await tag_h1.wait_for(state="visible", timeout=3000)
+
+                await tag_h1.wait_for(state="visible", timeout=5000)
+
                 nome_real = await tag_h1.inner_text()
-                if nome_real.strip():
-                    nome = nome_real.strip()
+
+                nome_real = nome_real.strip()
+
+                if nome_real:
+
+                    nome = nome_real
+
             except:
+
                 pass
+
+
+
+            # Limpa o nome capturado caso o H1 também traga o ID
 
             nome = re.sub(r'\s*\d+$', '', nome).strip()
 
+
+
             preco_txt = "R$ 0,00"
+
             try:
-                # Localizadores robustos compatíveis com a estrutura do Multimix
+
+                # Seletor direcionado: tenta pegar a classe específica do preço ou seletor de forte
+
+                # Isso impede que ele capture R$ falsos em banners ou cabeçalhos
+
                 elemento_preco = page.locator(".precoPor, .price, strong:has-text('R$'), text=R$").first
-                await elemento_preco.wait_for(state="visible", timeout=3000)
+
+                await elemento_preco.wait_for(state="visible", timeout=5000)
+
                 texto_interno = await elemento_preco.inner_text()
+
                 preco_txt = texto_interno.strip().split('\n')[0]
+
             except: 
+
                 pass
 
+
+
             valor = extrair_valor_numerico(preco_txt)
-            print(f"[{idx}/{total_itens}] Coletado: {nome[:35]:<35} | {preco_txt}")
+
             
-            if valor > 0.0:
-                lista_acumuladora.append({
-                    "produto": nome,
-                    "valor_numerico": valor,
-                    "mercado_id": MERCADO_ID,
-                    "data_robo": datetime.now(timezone.utc).isoformat()
-                })
+
+            # Se capturar como 0.00, loga como um aviso para acompanhamento na gôndola
+
+            if valor == 0.0:
+
+                print(f"⚠️ [{idx}/{total_itens}] Alerta Gôndola: {nome[:35]:<35} | Valor veio zerado.")
+
+            else:
+
+                print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
+
             
+
+            # --- AJUSTADO: Dicionário mapeado exatamente à sua estrutura DDL no Supabase ---
+
+            dados_produto = {
+
+                "produto": nome,
+
+                "valor_numerico": valor,
+
+                "mercado_id": MERCADO_ID,  # Chave estrangeira (BIGINT) vinculada ao id da tabela mercados
+
+                "data_robo": datetime.now(timezone.utc).isoformat()  # Registra a data/hora em formato ISO com fuso
+
+            }
+
+
+
+            bloco_acumulador.append(dados_produto)
+
+            
+
+            if len(bloco_acumulador) >= TAMANHO_BLOCO_SALVAMENTO:
+
+                await enviar_bloco_para_supabase()
+
+            
+
         except Exception as e:
-            print(f"❌ [{idx}/{total_itens}] Erro no link: {nome[:20]}... | {str(e)[:40]}")
+
+            print(f"❌ [{idx}/{total_itens}] Erro no item {nome[:25]}... | {str(e)[:40]}")
+
         finally:
+
             await page.close()
 
-async def main():
+            await context.close()
+
+
+
+async def realizar_raspagem_async(nome_arquivo):
+
+    # Registra e exibe a hora exata do início no fuso de Brasília para auditoria do GitHub Actions
+
     fuso_brasilia = pytz.timezone('America/Sao_Paulo')
+
     hora_inicio = datetime.now(fuso_brasilia).strftime('%d/%m/%Y %H:%M:%S')
 
-    # Lê todos os ~5.064 produtos do arquivo único links_multimix.txt
-    todos_produtos = ler_links_consolidados()
-    total_total = len(todos_produtos)
+    
+
+    itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
+
+    if not itens_para_rodar: 
+
+        print(f"⏰ [INFO] Tentativa de início em: {hora_inicio}")
+
+        print("⚠️ Nenhum produto encontrado no arquivo.")
+
+        return
+
+
+
+    total_itens = len(itens_para_rodar)
+
+
 
     print("-" * 60)
-    print(f"⏰ Horário de início do Robô: {hora_inicio}")
-    print(f"🚀 Total de links carregados de '{ARQUIVO_FONTE}': {total_total}")
-    print(f"🔄 Concorrência ativa: {MAX_CONCURRENT_TASKS} abas simultâneas")
-    print(f"📦 Tamanho do lote de salvamento: {TAMANHO_LOTE} itens")
-    print(f"💤 Intervalo de segurança: {PAUSA_ENTRE_LOTES} segundos entre lotes")
+
+    print(f"⏰ [INFO] O robô começou a rodar oficialmente em: {hora_inicio}")
+
+    print(f"🚀 Iniciando Varredura Otimizada (ID do Distrito Alvo: {MERCADO_ID})")
+
+    print(f"Alvo: {nome_arquivo} | Itens para processar: {total_itens}")
+
+    print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
+
+    print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
+
     print("-" * 60)
+
+
+
+    sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
+
+    
 
     async with async_playwright() as p:
+
         browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        )
 
-        # Processa os produtos divididos em lotes de 100
-        for i in range(0, total_total, TAMANHO_LOTE):
-            lote_atual = todos_produtos[i : i + TAMANHO_LOTE]
-            dados_lote = []
+        
+
+        tarefas = [
+
+            raspar_produto_individual(sem, browser, item, idx, total_itens)
+
+            for idx, item in enumerate(itens_para_rodar, start=1)
+
+        ]
+
+        
+
+        await asyncio.gather(*tarefas)
+
             
-            print(f"\n📦 [Lote] Iniciando processamento do item {i+1} ao {min(i+TAMANHO_LOTE, total_total)}...")
 
-            sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
-            
-            # Dispara concorrentemente de 5 em 5 abas os links do lote atual
-            tarefas = [
-                raspar_produto_individual(sem, context, item, i + idx, total_total, dados_lote)
-                for idx, item in enumerate(lote_atual, start=1)
-            ]
-            await asyncio.gather(*tarefas)
+        if bloco_acumulador:
 
-            # Grava no banco de dados Supabase as novas colunas configuradas
-            if dados_lote:
-                try:
-                    print(f"💾 Enviando bloco de {len(dados_lote)} produtos salvos para o Supabase...")
-                    supabase.table("historico_precos").insert(dados_lote).execute()
-                    print(f"✅ Gravação do lote concluída com sucesso no banco!")
-                except Exception as e:
-                    print(f"❌ Erro ao salvar lote no Supabase: {e}")
+            await enviar_bloco_para_supabase()
 
-            # Aplica a pausa estruturada de 1 minuto, a menos que seja o último lote do arquivo
-            if i + TAMANHO_LOTE < total_total:
-                print(f"⏳ Pausa estruturada de {PAUSA_ENTRE_LOTES} segundos para respiro do servidor...")
-                await asyncio.sleep(PAUSA_ENTRE_LOTES)
-                print("⏰ Fim da pausa. Iniciando próximo lote...\n")
+                
 
-        await context.close()
         await browser.close()
 
-    print("\n🎉 Varredura de preços concluída de ponta a ponta!")
+        
+
+    print(f"\n🎉 Processo Concluído! Total Novo Gravado no Supabase: {contador_salvos} itens.")
+
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+
+    if len(sys.argv) > 1:
+
+        categoria = sys.argv[1].strip().lower()
+
+        arquivo_alvo = f"links_{categoria}.txt"
+
+        print(f"📂 Categoria selecionada via argumento: {categoria.upper()}")
+
+    else:
+
+        arquivo_alvo = "links_multimix.txt"
+
+        print("📂 Nenhuma categoria enviada. Rodando arquivo completo padrão.")
+
+
+
+    asyncio.run(realizar_raspagem_async(arquivo_alvo))
