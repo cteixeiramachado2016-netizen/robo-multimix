@@ -1,12 +1,3 @@
-No código que analisamos anteriormente, o envio estava sendo feito **de uma vez só no final do script** (enviando a lista inteira de `resultados` após fechar o navegador), e não em blocos de 100 em 100.
-
-Se a sua lista de links for muito grande, enviar tudo de uma vez pode estourar o limite de requisição do Supabase ou fazer você perder todo o progresso se o robô cair no meio do caminho.
-
-Para resolver isso, estruturei o envio em lotes (chunks) de **100 em 100 itens**. Assim, à medida que o robô vai coletando, ele já vai salvando e limpando a memória.
-
-Aqui está o `meu_robo.py` ajustado com essa lógica de salvamento em lotes:
-
-```python
 import os
 import re
 import sys
@@ -29,7 +20,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 ARQUIVO_TESTE = "links_multimix_teste.txt"
 BASE_URL = "https://www.emporiomultimix.com.br"
-TAMANHO_LOTE = 100  # Define o tamanho do bloco para salvamento
+TAMANHO_LOTE = 100  # Envia ao Supabase a cada 100 itens
 
 def extrair_valor_numerico(texto_preco):
     try:
@@ -100,7 +91,7 @@ async def testar_link(browser, url, idx, total):
         resultado_salvar = {
             "produto": nome_produto,
             "valor_numerico": valor_numerico,
-            "mercado_id": "1", # Mercado Centro
+            "mercado_id": "1",
             "data_robo": datetime.now(timezone.utc).isoformat()
         }
         
@@ -118,7 +109,6 @@ async def testar_link(browser, url, idx, total):
     return resultado_salvar
 
 def salvar_no_supabase(dados):
-    """Função auxiliar para fazer o envio síncrono e seguro dos blocos."""
     try:
         supabase.table("teste_seletores_log").insert(dados).execute()
         print(f"💾 Lote de {len(dados)} registros gravados com sucesso no Supabase!")
@@ -134,7 +124,7 @@ async def main():
         return
         
     total_links = len(links)
-    print(f"🧪 Iniciando raspagem para {total_links} URLs...")
+    print(f"🧪 Iniciando raspagem de controle para {total_links} URLs...")
     
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -145,27 +135,18 @@ async def main():
             if res:
                 resultados_lote.append(res)
             
-            # Quando atingir o tamanho do lote (100), envia e limpa a lista temporária
+            # Envia e limpa a lista se atingir 100 itens
             if len(resultados_lote) >= TAMANHO_LOTE:
-                print(f"📦 Limiar de {TAMANHO_LOTE} itens atingido. Enviando lote para o banco...")
+                print(f"📦 Limiar de {TAMANHO_LOTE} itens atingido. Salvando lote...")
                 salvar_no_supabase(resultados_lote)
-                resultados_lote = []  # Esvazia a lista para o próximo lote
+                resultados_lote = []
                 
         await browser.close()
         
-        # Envia o que sobrou no último lote (caso o total não seja múltiplo exato de 100)
+        # Salva o resto que sobrou
         if resultados_lote:
             print(f"📦 Enviando lote final restante de {len(resultados_lote)} itens...")
             salvar_no_supabase(resultados_lote)
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-```
-
-### O que mudou com essa implementação de lotes:
-
-* **Variável `TAMANHO_LOTE = 100**`: Define de forma simples o limite do bloco.
-* **Função `salvar_no_supabase**`: Isolei o bloco de envio para manter o loop principal limpo e legível.
-* **Envio em tempo de execução**: O robô não espera mais terminar de ler todos os links para salvar. A cada 100 links processados, ele joga os dados no Supabase.
-* **Tratamento de sobra**: Se você tiver 250 links, ele vai salvar dois lotes de 100 durante a execução e um lote final de 50 após o encerramento do navegador.
