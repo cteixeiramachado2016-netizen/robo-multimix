@@ -1,29 +1,52 @@
 import os
+import re
+import sys
 import asyncio
+from datetime import datetime, timezone
+from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
 
-# Configurações do Supabase extraídas do ambiente do GitHub
+# Carrega credenciais
+load_dotenv("credenciais_supabase.env")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
 
-supabase: Client = None
-if SUPABASE_URL and SUPABASE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print("✅ Conexão com o Supabase estabelecida para gravação dos testes!")
-else:
-    print("⚠️ Atenção: Variáveis do Supabase não encontradas. O teste rodará sem salvar no banco.")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    print("❌ Erro: Chaves do Supabase não encontradas!")
+    exit(1)
 
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# Configurações do Teste
+ARQUIVO_TESTE = "links_multimix_teste.txt"
 BASE_URL = "https://www.emporiomultimix.com.br"
+
+# Lista de seletores para testar em ordem de prioridade
+SELETORES_PRECO_TESTE = [
+    "span:has-text('R$')", 
+    ".precoPor", 
+    ".price", 
+    ".product-price", 
+    "strong:has-text('R$')"
+]
+
+def extrair_valor_numerico(texto_preco):
+    try:
+        apenas_numeros = re.sub(r'[^\d,.]', '', texto_preco)
+        if ',' in apenas_numeros:
+            apenas_numeros = apenas_numeros.replace('.', '').replace(',', '.')
+        return float(apenas_numeros)
+    except:
+        return 0.0
 
 def ler_links_teste():
     links = []
-    arquivo = "links_multimix_teste.txt"
-    if not os.path.exists(arquivo):
-        print(f"❌ Erro: O arquivo '{arquivo}' não foi encontrado!")
+    if not os.path.exists(ARQUIVO_TESTE):
+        print(f"❌ Erro: Arquivo {ARQUIVO_TESTE} não encontrado!")
         return links
     
-    with open(arquivo, 'r', encoding='utf-8') as f:
+    with open(ARQUIVO_TESTE, 'r', encoding='utf-8') as f:
         for linha in f:
             linha = linha.strip()
             if linha and not linha.startswith("#"):
@@ -32,80 +55,114 @@ def ler_links_teste():
                 else:
                     url = linha
                 links.append(url)
-    return links
+    return list(set(links)) # Remove duplicados na leitura
 
-async def testar_pagina(page, url):
-    print(f"\n🔗 [TESTE] Acessando: {url}")
-    produto_nome = "Desconhecido"
+async def testar_link(browser, url, idx, total):
+    context = await browser.new_context(
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    )
+    page = await context.new_page()
+    page.set_default_timeout(20000)
+    
+    resultado_salvar = None
     
     try:
-        await page.goto(url, wait_until="load", timeout=25000)
+        print(f"🔄 [{idx}/{total}] Acessando: {url}")
+        await page.goto(url, wait_until="load")
         
-        # Tenta pegar o nome do produto
+        # 1. Tenta capturar o Título de forma flexível
+        nome_produto = "Desconhecido"
         try:
-            titulo = await page.locator("h1").first.inner_text()
-            produto_nome = titulo.strip()
-            print(f"📦 [PRODUTO]: {produto_nome}")
+            tag_titulo = page.locator("h1, .product-name, [class*='title'], h2").first
+            await tag_titulo.wait_for(state="visible", timeout=3000)
+            nome_real = await tag_titulo.inner_text()
+            if nome_real:
+                nome_produto = nome_real.strip()
         except:
-            print("⚠️ Não foi possível encontrar o título do produto")
-
-        # Nossos candidatos a seletores de preço
-        seletores = [
-            ".precoPor",
-            ".price",
-            ".product-price",
-            ".precos",
-            "[id*='preco']",
-            "[class*='preco']",
-            "[class*='price']",
-            "strong:has-text('R$')",
-            "span:has-text('R$')",
-            "div:has-text('R$')",
-            "p:has-text('R$')"
-        ]
+            pass
+            
+        # 2. Testa os seletores de preço UM POR UM (para ao achar o primeiro válido)
+        seletor_vencedor = "Nenhum"
+        preco_detectado = "R$ 0,00"
+        valor_numerico = 0.0
         
-        for seletor in seletores:
+        for seletor in SELETORES_PRECO_TESTE:
             try:
                 elemento = page.locator(seletor).first
                 await elemento.wait_for(state="visible", timeout=3000)
                 texto = await elemento.inner_text()
-                texto_limpo = texto.strip().replace('\n', ' ')
+                texto_limpo = texto.strip().split('\n')[0]
                 
-                if texto_limpo:
-                    print(f"   ✅ Seletor '{seletor}': '{texto_limpo}'")
-                    
-                    # Se o Supabase estiver ativo, salva o teste bem-sucedido no banco
-                    if supabase:
-                        dados_teste = {
-                            "url": url,
-                            "produto": produto_nome,
-                            "seletor_testado": seletor,
-                            "valor_encontrado": texto_limpo
-                        }
-                        supabase.table("teste_seletores_log").insert(dados_teste).execute()
-            except Exception as e:
-                pass
-                
+                temp_valor = extrair_valor_numerico(texto_limpo)
+                if temp_valor > 0.0:
+                    seletor_vencedor = seletor
+                    preco_detectado = texto_limpo
+                    valor_numerico = temp_valor
+                    break # ENCONTROU O SELETOR CERTO! Interrompe o loop de testes para este link
+            except:
+                continue
+
+        # Estrutura os dados para salvar
+        resultado_salvar = {
+            "url": url,
+            "produto": nome_produto,
+            "seletor_usado": seletor_vencedor,
+            "preco_capturado": preco_detectado,
+            "valor_numerico": valor_numerico,
+            "sucesso": valor_numerico > 0.0,
+            "data_teste": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if resultado_salvar["sucesso"]:
+            print(f"✅ SUCESSO: '{nome_produto[:30]}' | Seletor: {seletor_vencedor} | Preço: {preco_detectado}")
+        else:
+            print(f"❌ FALHA: Não foi possível extrair preço para {url}")
+            
     except Exception as e:
-        print(f"❌ Erro ao acessar o link: {str(e)[:50]}")
+        print(f"💥 Erro crítico ao testar URL: {str(e)[:50]}")
+        resultado_salvar = {
+            "url": url,
+            "produto": "Erro de Conexão",
+            "seletor_usado": "Erro",
+            "preco_capturado": "R$ 0,00",
+            "valor_numerico": 0.0,
+            "sucesso": False,
+            "data_teste": datetime.now(timezone.utc).isoformat()
+        }
+    finally:
+        await page.close()
+        await context.close()
+        
+    return resultado_salvar
 
 async def main():
     links = ler_links_teste()
     if not links:
-        print("⚠️ Nenhum link carregado do arquivo de teste.")
+        print("⚠️ Nenhum link de teste encontrado no arquivo.")
         return
-
+        
+    print(f"🧪 Iniciando testes para {len(links)} URLs de controle...")
+    
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        )
-        page = await context.new_page()
+        resultados = []
         
-        for url in links:
-            await testar_pagina(page, url)
-            
+        for idx, url in enumerate(links, start=1):
+            res = await testar_link(browser, url, idx, len(links))
+            if res:
+                resultados.append(res)
+                
         await browser.close()
+        
+        # Envia resultados para a tabela do Supabase
+        if resultados:
+            try:
+                await asyncio.to_thread(
+                    supabase.table("teste_seletores_log").insert(resultados).execute
+                )
+                print(f"💾 {len(resultados)} relatórios de teste salvos em 'teste_seletores_log'!")
+            except Exception as e:
+                print(f"❌ Erro ao salvar logs no Supabase: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())
