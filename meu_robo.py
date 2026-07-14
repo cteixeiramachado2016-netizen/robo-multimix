@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
 
-# 1. Carrega as chaves do seu arquivo personalizado e organized
+# 1. Carrega as chaves do seu arquivo personalizado e organizado
 load_dotenv("credenciais_supabase.env")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -25,13 +25,37 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 MERCADO_ID = 1  # 1 = Centro (Os próximos distritos usarão IDs como 2, 3, 4, etc.)
 
 BASE_URL = "https://www.emporiomultimix.com.br"
-MAX_CONCURRENT_TASKS = 2
+MAX_CONCURRENT_TASKS = 5  # <--- Quantidade de abas concorrentes (roda de 5 em 5)
+PAUSA_ENTRE_SESSOES = 60  # <--- Pausa de 1 minuto (60s) entre o fim de uma sessão e o início de outra
 
-# CONFIGURAÇÃO DE BLOCO (Salvar a cada 100 produtos em tempo real)
+# CONFIGURAÇÃO DE BLOCO (Salvar a cada 100 produtos em tempo real dentro da sessão)
 TAMANHO_BLOCO_SALVAMENTO = 100
 bloco_acumulador = []
 lock_banco = asyncio.Lock()  # Garante segurança nas operações assíncronas
 contador_salvos = 0
+
+# Lista de todas as suas 19 sessões/categorias reais do Multimix Centro
+SESSOES_PADRAO = [
+    "acougue",
+    "hortifruti",
+    "bebidas_alcoolicas",
+    "vinhos",
+    "bebidas",
+    "congelados",
+    "limpeza",
+    "mercearia_doce",
+    "padaria_artesanal",
+    "padaria_industrial",
+    "petshop",
+    "peixaria",
+    "higiene",
+    "lanchonete",
+    "frios",
+    "saudavel",
+    "bazar",
+    "laticinios_embutidos",
+    "mercearia_salgada"
+]
 
 def extrair_valor_numerico(texto_preco):
     try:
@@ -43,15 +67,11 @@ def extrair_valor_numerico(texto_preco):
         return 0.0
 
 def extrair_nome_pelo_link(url):
-    """
-    Remove parâmetros de busca (?...) e limpa o ID numérico final do e-commerce (ex: -131366)
-    para que o nome fique amigável e limpo no banco de dados.
-    """
     try:
         parte_final = url.split('/')[-1]
         nome_limpo = parte_final.split('?')[0]
         
-        # Expressão regular para remover hífens seguidos de números no final da string (o ID do mercado)
+        # Expressão regular para remover hífens seguidos de números no final da string
         nome_sem_id = re.sub(r'-\d+$', '', nome_limpo)
         
         nome_amigavel = nome_sem_id.replace('-', ' ').title()
@@ -89,7 +109,6 @@ def ler_dados_do_arquivo(nome_arquivo):
     return produtos_unicos
 
 async def enviar_bloco_para_supabase():
-    """Função interna para descarregar o bloco atual no banco de dados com estrutura limpa"""
     global bloco_acumulador, contador_salvos
     if not bloco_acumulador:
         return
@@ -100,7 +119,6 @@ async def enviar_bloco_para_supabase():
             
             if not resposta or not hasattr(resposta, 'data') or not resposta.data:
                 print("⚠️ [Supabase] Atenção: O comando foi enviado, mas o banco retornou uma estrutura vazia.")
-                print("👉 Verifique as políticas de RLS ou se a tabela possui restrições.")
             else:
                 contador_salvos += len(bloco_acumulador)
                 print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos! (Total gravado nesta rodada: {contador_salvos})")
@@ -108,35 +126,37 @@ async def enviar_bloco_para_supabase():
             bloco_acumulador = []  # Limpa o bloco da memória
         except Exception as e:
             print(f"❌ ERRO CRÍTICO NO SUPABASE: {e}")
-            print("🛑 Interrompendo execução para diagnóstico do erro acima.")
             sys.exit(1)
 
-async def raspar_produto_individual(sem, browser, item, idx, total_itens):
-    """Roda de forma assíncrona, raspa e joga os dados no acumulador"""
+# Interceptador de requisições para bloquear mídias pesadas e rastreadores
+async def bloquear_recursos_pesados(route):
+    resource_type = route.request.resource_type
+    if resource_type in ["image", "stylesheet", "font", "media"] or "google" in route.request.url or "facebook" in route.request.url:
+        await route.abort()
+    else:
+        await route.continue_()
+
+async def raspar_produto_individual(sem, context, item, idx, total_itens):
+    """Roda de forma assíncrona, respeitando o limite de concorrência de 5 em 5"""
     global bloco_acumulador
     async with sem:
         url = item["url"]
         nome = item["nome"]
         
-        context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        )
         page = await context.new_page()
-        # Tempo limite estendido para garantir o carregamento de scripts pesados do mercado
-        page.set_default_timeout(25000)
+        page.set_default_timeout(15000)
+        await page.route("**/*", bloquear_recursos_pesados)
         
         try:
-            # Mudado de domcontentloaded para 'load' para garantir que os scripts de preço rodem antes da leitura
-            response = await page.goto(url, wait_until="load")
+            response = await page.goto(url, wait_until="domcontentloaded")
             
             if response and response.status >= 500:
                 print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor.")
                 return
 
-            # Captura o nome real de dentro da tag H1 do site
             tag_h1 = page.locator("h1").first
             try:
-                await tag_h1.wait_for(state="visible", timeout=5000)
+                await tag_h1.wait_for(state="visible", timeout=3000)
                 nome_real = await tag_h1.inner_text()
                 nome_real = nome_real.strip()
                 if nome_real:
@@ -144,15 +164,12 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             except:
                 pass
 
-            # Limpa o nome capturado caso o H1 também traga o ID
             nome = re.sub(r'\s*\d+$', '', nome).strip()
 
             preco_txt = "R$ 0,00"
             try:
-                # Seletor direcionado: tenta pegar a classe específica do preço ou seletor de forte
-                # Isso impede que ele capture R$ falsos em banners ou cabeçalhos
                 elemento_preco = page.locator(".precoPor, .price, strong:has-text('R$'), text=R$").first
-                await elemento_preco.wait_for(state="visible", timeout=5000)
+                await elemento_preco.wait_for(state="visible", timeout=3000)
                 texto_interno = await elemento_preco.inner_text()
                 preco_txt = texto_interno.strip().split('\n')[0]
             except: 
@@ -160,18 +177,16 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
 
             valor = extrair_valor_numerico(preco_txt)
             
-            # Se capturar como 0.00, loga como um aviso para acompanhamento na gôndola
             if valor == 0.0:
                 print(f"⚠️ [{idx}/{total_itens}] Alerta Gôndola: {nome[:35]:<35} | Valor veio zerado.")
             else:
                 print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
             
-            # --- AJUSTADO: Dicionário mapeado exatamente à sua estrutura DDL no Supabase ---
             dados_produto = {
                 "produto": nome,
                 "valor_numerico": valor,
-                "mercado_id": MERCADO_ID,  # Chave estrangeira (BIGINT) vinculada ao id da tabela mercados
-                "data_robo": datetime.now(timezone.utc).isoformat()  # Registra a data/hora em formato ISO com fuso
+                "mercado_id": MERCADO_ID,
+                "data_robo": datetime.now(timezone.utc).isoformat()
             }
 
             bloco_acumulador.append(dados_produto)
@@ -183,55 +198,80 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             print(f"❌ [{idx}/{total_itens}] Erro no item {nome[:25]}... | {str(e)[:40]}")
         finally:
             await page.close()
-            await context.close()
 
-async def realizar_raspagem_async(nome_arquivo):
-    # Registra e exibe a hora exata do início no fuso de Brasília para auditoria do GitHub Actions
-    fuso_brasilia = pytz.timezone('America/Sao_Paulo')
-    hora_inicio = datetime.now(fuso_brasilia).strftime('%d/%m/%Y %H:%M:%S')
+async def realizar_raspagem_sessao(context, nome_arquivo):
+    """Executa a raspagem completa de uma única sessão de arquivos de links"""
+    global bloco_acumulador
     
     itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
     if not itens_para_rodar: 
-        print(f"⏰ [INFO] Tentativa de início em: {hora_inicio}")
-        print("⚠️ Nenhum produto encontrado no arquivo.")
-        return
+        print(f"⚠️ Nenhum produto encontrado no arquivo: {nome_arquivo}")
+        return False
 
     total_itens = len(itens_para_rodar)
-
-    print("-" * 60)
-    print(f"⏰ [INFO] O robô começou a rodar oficialmente em: {hora_inicio}")
-    print(f"🚀 Iniciando Varredura Otimizada (ID do Distrito Alvo: {MERCADO_ID})")
-    print(f"Alvo: {nome_arquivo} | Itens para processar: {total_itens}")
-    print(f"Tarefas simultâneas: {MAX_CONCURRENT_TASKS}")
-    print(f"Salvamento configurado a cada: {TAMANHO_BLOCO_SALVAMENTO} itens")
-    print("-" * 60)
+    print(f"📂 Processando Sessão: {nome_arquivo} | Itens: {total_itens}")
 
     sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
     
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+    # Executa todos os itens da sessão usando concorrência assíncrona de 5 em 5
+    tarefas = [
+        raspar_produto_individual(sem, context, item, idx, total_itens)
+        for idx, item in enumerate(itens_para_rodar, start=1)
+    ]
+    
+    await asyncio.gather(*tarefas)
         
-        tarefas = [
-            raspar_produto_individual(sem, browser, item, idx, total_itens)
-            for idx, item in enumerate(itens_para_rodar, start=1)
-        ]
+    # Garante que qualquer dado restante no acumulador seja salvo ao final desta sessão específica
+    if bloco_acumulador:
+        await enviar_bloco_para_supabase()
         
-        await asyncio.gather(*tarefas)
-            
-        if bloco_acumulador:
-            await enviar_bloco_para_supabase()
-                
-        await browser.close()
-        
-    print(f"\n🎉 Processo Concluído! Total Novo Gravado no Supabase: {contador_salvos} itens.")
+    return True
 
-if __name__ == "__main__":
+async def main():
+    fuso_brasilia = pytz.timezone('America/Sao_Paulo')
+    hora_inicio = datetime.now(fuso_brasilia).strftime('%d/%m/%Y %H:%M:%S')
+    
+    # 1. Determina quais arquivos de links processar
     if len(sys.argv) > 1:
         categoria = sys.argv[1].strip().lower()
-        arquivo_alvo = f"links_{categoria}.txt"
-        print(f"📂 Categoria selecionada via argumento: {categoria.upper()}")
+        arquivos_fila = [f"links_{categoria}.txt"]
+        modo_unico = True
+        print(f"📂 Modo de Categoria Única Selecionado: {categoria.upper()}")
     else:
-        arquivo_alvo = "links_multimix.txt"
-        print("📂 Nenhuma categoria enviada. Rodando arquivo completo padrão.")
+        arquivos_fila = [f"links_{cat}.txt" for cat in SESSOES_PADRAO]
+        modo_unico = False
+        print("📂 Modo Varredura Geral Selecionado (Múltiplas Categorias).")
 
-    asyncio.run(realizar_raspagem_async(arquivo_alvo))
+    print("-" * 60)
+    print(f"⏰ [INFO] O robô começou a rodar oficialmente em: {hora_inicio}")
+    print(f"🚀 Varredura Iniciada (ID do Distrito Alvo: {MERCADO_ID})")
+    print(f"Fila de Arquivos: {arquivos_fila}")
+    print(f"Fluxo Concorrente: {MAX_CONCURRENT_TASKS} produtos por vez")
+    print(f"Pausa entre Sessões: {PAUSA_ENTRE_SESSOES} segundos")
+    print("-" * 60)
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        
+        total_arquivos = len(arquivos_fila)
+        for index, arquivo in enumerate(arquivos_fila):
+            # Executa a raspagem completa do arquivo atual da vez
+            sucesso = await realizar_raspagem_sessao(context, arquivo)
+            
+            # Se não for o último arquivo e a raspagem da sessão foi bem sucedida, aplica a pausa estruturada
+            if sucesso and not modo_unico and index < total_arquivos - 1:
+                print(f"\n⏳ Sessão de '{arquivo}' finalizada com dados salvos.")
+                print(f"💤 Entrando em repouso por {PAUSA_ENTRE_SESSOES} segundos antes de iniciar o próximo arquivo...")
+                await asyncio.sleep(PAUSA_ENTRE_SESSOES)
+                print("⏰ Fim da pausa! Retomando varredura...\n")
+                
+        await context.close()
+        await browser.close()
+        
+    print(f"\n🎉 Varredura Geral Concluída! Total Novo Gravado no Supabase nesta rodada: {contador_salvos} itens.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
