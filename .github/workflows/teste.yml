@@ -1,0 +1,35 @@
+name: Teste de Seletores - Multimix
+
+on:
+  # Permite que você clique no botão para rodar manualmente sempre que quiser testar
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testar-seletores:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar o Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 3. Instalar dependências do Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright python-dotenv pytz
+
+      - name: 4. Instalar Navegadores e Dependências do Sistema
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
+
+      # Roda o arquivo específico de teste buscando os novos links
+      - name: 5. Executar Script de Teste
+        run: python teste_seletor.py
