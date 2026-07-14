@@ -13,35 +13,15 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# --- CONFIGURAÇÕES DO SISTEMA ---
 MERCADO_ID = 1  # Centro
+ARQUIVO_FONTE = "links_multimix.txt"  # O arquivo gerado automaticamente pelo Explorador
 BASE_URL = "https://www.emporiomultimix.com.br"
 
-# Controle de Fluxo solicitado por você
-MAX_CONCURRENT_TASKS = 5  # <--- Abre exatamente de 5 em 5 abas simultâneas
-PAUSA_ENTRE_SESSOES = 60  # <--- Pausa de 1 minuto (60s) entre cada arquivo de sessão
-
-# Lista ordenada das suas 19 sessões reais
-SESSOES_PADRAO = [
-    "acougue",
-    "hortifruti",
-    "bebidas_alcoolicas",
-    "vinhos",
-    "bebidas",
-    "congelados",
-    "limpeza",
-    "mercearia_doce",
-    "padaria_artesanal",
-    "padaria_industrial",
-    "petshop",
-    "peixaria",
-    "higiene",
-    "lanchonete",
-    "frios",
-    "saudavel",
-    "bazar",
-    "laticinios_embutidos",
-    "mercearia_salgada"
-]
+# --- CONTROLE DE CONCORRÊNCIA E LOTES ---
+MAX_CONCURRENT_TASKS = 5  # Abre exatamente de 5 em 5 abas simultâneas
+TAMANHO_LOTE = 100         # Processa e salva no Supabase em blocos de 100 em 100 produtos
+PAUSA_ENTRE_LOTES = 60     # Pausa de 1 minuto (60s) após processar e salvar cada lote de 100
 
 def extrair_valor_numerico(texto_preco):
     try:
@@ -62,13 +42,13 @@ def extrair_nome_pelo_link(url):
     except:
         return "Produto Sem Nome"
 
-def ler_dados_do_arquivo(nome_arquivo):
+def ler_links_consolidados():
     produtos_links = []
-    if not os.path.exists(nome_arquivo):
-        print(f"❌ Erro: O arquivo '{nome_arquivo}' não foi encontrado!")
-        return produtos_links
+    if not os.path.exists(ARQUIVO_FONTE):
+        print(f"❌ Erro Crítico: O arquivo de entrada '{ARQUIVO_FONTE}' não foi encontrado!")
+        sys.exit(1)
         
-    with open(nome_arquivo, 'r', encoding='utf-8') as f:
+    with open(ARQUIVO_FONTE, 'r', encoding='utf-8') as f:
         for linha in f:
             linha = linha.strip()
             if linha and not linha.startswith("#"):
@@ -80,6 +60,7 @@ def ler_dados_do_arquivo(nome_arquivo):
                 nome_produto = extrair_nome_pelo_link(url_completa)
                 produtos_links.append({"nome": nome_produto, "url": url_completa})
                     
+    # Remove duplicados mantendo a ordem
     urls_vistas = set()
     produtos_unicos = []
     for p in produtos_links:
@@ -125,6 +106,7 @@ async def raspar_produto_individual(sem, context, item, idx, total_itens, lista_
 
             preco_txt = "R$ 0,00"
             try:
+                # Localizadores robustos compatíveis com a estrutura do Multimix
                 elemento_preco = page.locator(".precoPor, .price, strong:has-text('R$'), text=R$").first
                 await elemento_preco.wait_for(state="visible", timeout=3000)
                 texto_interno = await elemento_preco.inner_text()
@@ -148,53 +130,20 @@ async def raspar_produto_individual(sem, context, item, idx, total_itens, lista_
         finally:
             await page.close()
 
-async def realizar_raspagem_sessao(context, nome_arquivo):
-    """Processa a sessão inteira do arquivo e grava de uma vez no final da sessão"""
-    itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
-    if not itens_para_rodar:
-        return False
-
-    total_itens = len(itens_para_rodar)
-    print(f"\n📂 Processando Sessão: {nome_arquivo} | {total_itens} links encontrados.")
-
-    sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
-    dados_sessao = []
-
-    # Dispara a raspagem concorrente de 5 em 5 abas dentro da sessão atual
-    tarefas = [
-        raspar_produto_individual(sem, context, item, idx, total_itens, dados_sessao)
-        for idx, item in enumerate(itens_para_rodar, start=1)
-    ]
-    await asyncio.gather(*tarefas)
-
-    # Grava todos os dados coletados desta sessão no Supabase de uma vez só
-    if dados_sessao:
-        try:
-            print(f"💾 Enviando {len(dados_sessao)} produtos de '{nome_arquivo}' para o Supabase...")
-            supabase.table("historico_precos").insert(dados_sessao).execute()
-            print(f"✅ Sessão '{nome_arquivo}' salva com sucesso no banco!")
-        except Exception as e:
-            print(f"❌ Erro ao salvar dados no Supabase: {e}")
-            
-    return True
-
 async def main():
     fuso_brasilia = pytz.timezone('America/Sao_Paulo')
     hora_inicio = datetime.now(fuso_brasilia).strftime('%d/%m/%Y %H:%M:%S')
 
-    if len(sys.argv) > 1:
-        categoria = sys.argv[1].strip().lower()
-        arquivos_fila = [f"links_{categoria}.txt"]
-        modo_unico = True
-        print(f"📂 Rodando categoria única de forma manual: {categoria.upper()}")
-    else:
-        arquivos_fila = [f"links_{cat}.txt" for cat in SESSOES_PADRAO]
-        modo_unico = False
-        print("📂 Iniciando varredura sequencial completa das 19 sessões...")
+    # Lê todos os ~5.064 produtos do arquivo único links_multimix.txt
+    todos_produtos = ler_links_consolidados()
+    total_total = len(todos_produtos)
 
     print("-" * 60)
-    print(f"⏰ Horário de início: {hora_inicio}")
+    print(f"⏰ Horário de início do Robô: {hora_inicio}")
+    print(f"🚀 Total de links carregados de '{ARQUIVO_FONTE}': {total_total}")
     print(f"🔄 Concorrência ativa: {MAX_CONCURRENT_TASKS} abas simultâneas")
+    print(f"📦 Tamanho do lote de salvamento: {TAMANHO_LOTE} itens")
+    print(f"💤 Intervalo de segurança: {PAUSA_ENTRE_LOTES} segundos entre lotes")
     print("-" * 60)
 
     async with async_playwright() as p:
@@ -203,21 +152,41 @@ async def main():
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
 
-        total_arquivos = len(arquivos_fila)
-        for index, arquivo in enumerate(arquivos_fila):
-            # Executa a raspagem completa da sessão atual
-            sucesso = await realizar_raspagem_sessao(context, arquivo)
+        # Processa os produtos divididos em lotes de 100
+        for i in range(0, total_total, TAMANHO_LOTE):
+            lote_atual = todos_produtos[i : i + TAMANHO_LOTE]
+            dados_lote = []
+            
+            print(f"\n📦 [Lote] Iniciando processamento do item {i+1} ao {min(i+TAMANHO_LOTE, total_total)}...")
 
-            # Só aplica a pausa de 1 minuto se houver mais sessões para rodar na fila sequencial
-            if sucesso and not modo_unico and index < total_arquivos - 1:
-                print(f"⏳ Pausa estruturada: aguardando {PAUSA_ENTRE_SESSOES} segundos antes da próxima sessão...")
-                await asyncio.sleep(PAUSA_ENTRE_SESSOES)
-                print("⏰ Fim do intervalo. Retomando varredura...\n")
+            sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
+            
+            # Dispara concorrentemente de 5 em 5 abas os links do lote atual
+            tarefas = [
+                raspar_produto_individual(sem, context, item, i + idx, total_total, dados_lote)
+                for idx, item in enumerate(lote_atual, start=1)
+            ]
+            await asyncio.gather(*tarefas)
+
+            # Grava no banco de dados Supabase as novas colunas configuradas
+            if dados_lote:
+                try:
+                    print(f"💾 Enviando bloco de {len(dados_lote)} produtos salvos para o Supabase...")
+                    supabase.table("historico_precos").insert(dados_lote).execute()
+                    print(f"✅ Gravação do lote concluída com sucesso no banco!")
+                except Exception as e:
+                    print(f"❌ Erro ao salvar lote no Supabase: {e}")
+
+            # Aplica a pausa estruturada de 1 minuto, a menos que seja o último lote do arquivo
+            if i + TAMANHO_LOTE < total_total:
+                print(f"⏳ Pausa estruturada de {PAUSA_ENTRE_LOTES} segundos para respiro do servidor...")
+                await asyncio.sleep(PAUSA_ENTRE_LOTES)
+                print("⏰ Fim da pausa. Iniciando próximo lote...\n")
 
         await context.close()
         await browser.close()
 
-    print("\n🎉 Varredura finalizada!")
+    print("\n🎉 Varredura de preços concluída de ponta a ponta!")
 
 if __name__ == "__main__":
     asyncio.run(main())
