@@ -114,7 +114,8 @@ async def testar_link(browser, url, idx, total):
 
 def salvar_no_supabase(dados):
     try:
-        supabase.table("teste_seletores_log").insert(dados).execute()
+        # Enviando para a tabela correta de produção: historico_precos
+        supabase.table("historico_precos").insert(dados).execute()
         print(f"💾 Lote de {len(dados)} registros gravados com sucesso no Supabase!")
         return True
     except Exception as e:
