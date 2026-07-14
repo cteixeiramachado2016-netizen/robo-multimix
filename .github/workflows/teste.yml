@@ -3,7 +3,7 @@ name: Testador de Seletores
 on:
   workflow_dispatch: # Permite que você ative o teste manualmente com um clique no painel do GitHub
   schedule:
-    - cron: '0 8 * * 1' # Opcional: Roda automaticamente toda segunda-feira às 05:00h (horário de Brasília) para checar se algo quebrou
+    - cron: '0 8 * * 1' # Opcional: Roda automaticamente toda segunda-feira às 05:00h (horário de Brasília)
 
 jobs:
   rodar-testes:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
+          # Removido o cache automático do pip para evitar o erro de falta de requirements.txt
 
       - name: Instalar Dependências do Robô
         run: |
