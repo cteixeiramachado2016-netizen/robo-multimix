@@ -1,54 +1,42 @@
 import os
 import re
-import sys  # Captura a sessão via linha de comando
+import sys
 import asyncio
-from datetime import datetime, timezone  # <--- Incluído timezone nativo para o formato do Supabase
-import pytz  # Certifique-se de que está no seu requirements.txt ou setup do workflow
+from datetime import datetime, timezone
+import pytz
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
 
-# --- SUAS CREDENCIAIS DO SUPABASE REORGANIZADAS ---
+# --- SUAS CREDENCIAIS OFICIAIS DO SUPABASE ---
 SUPABASE_URL = "https://uqovffvxtskmbycldmwd.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb3ZmZnZ4dHNrbWJ5Y2xkbXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyNTgzMTEsImV4cCI6MjA1NDgzNDMxMX0.r7l72S69FidA2_D9_B98T5_vC_S-3vWreV-rGz6-RkQ"
 
-# Inicializa o cliente do Supabase com as chaves injetadas diretamente
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- CONFIGURAÇÕES DE BANCO E RASPAGEM ---
-MERCADO_ID = 1  # 1 = Centro (Os próximos distritos usarão IDs como 2, 3, 4, etc.)
+MERCADO_ID = 1  # Centro
 
-BASE_URL = "https://www.emporiomultimix.com.br"
-MAX_CONCURRENT_TASKS = 5  # <--- Quantidade de abas concorrentes (roda de 5 em 5)
-PAUSA_ENTRE_SESSOES = 60  # <--- Pausa de 1 minuto (60s) entre o fim de uma sessão e o início de outra
-
-# CONFIGURAÇÃO DE BLOCO (Salvar a cada 100 produtos em tempo real dentro da sessão)
-TAMANHO_BLOCO_SALVAMENTO = 100
-bloco_acumulador = []
-lock_banco = asyncio.Lock()  # Garante segurança nas operações assíncronas
-contador_salvos = 0
-
-# Lista de todas as suas 19 sessões/categorias reais do Multimix Centro
-SESSOES_PADRAO = [
-    "acougue",
-    "hortifruti",
-    "bebidas_alcoolicas",
-    "vinhos",
-    "bebidas",
-    "congelados",
-    "limpeza",
-    "mercearia_doce",
-    "padaria_artesanal",
-    "padaria_industrial",
-    "petshop",
-    "peixaria",
-    "higiene",
-    "lanchonete",
-    "frios",
-    "saudavel",
-    "bazar",
-    "laticinios_embutidos",
-    "mercearia_salgada"
-]
+# Dicionário de URLs baseadas no seu mapeamento original
+SESSÕES = {
+    "acougue": "https://www.emporiomultimix.com.br/acougue",
+    "hortifruti": "https://www.emporiomultimix.com.br/hortifruti",
+    "bebidas_alcoolicas": "https://www.emporiomultimix.com.br/bebidas-alcoolicas",
+    "vinhos": "https://www.emporiomultimix.com.br/vinhos",
+    "bebidas": "https://www.emporiomultimix.com.br/bebidas",
+    "congelados": "https://www.emporiomultimix.com.br/congelados",
+    "limpeza": "https://www.emporiomultimix.com.br/limpeza",
+    "mercearia_doce": "https://www.emporiomultimix.com.br/mercearia-doce",
+    "padaria_artesanal": "https://www.emporiomultimix.com.br/padaria-artesanal",
+    "padaria_industrial": "https://www.emporiomultimix.com.br/padaria-industrial",
+    "petshop": "https://www.emporiomultimix.com.br/pet-shop",
+    "peixaria": "https://www.emporiomultimix.com.br/peixaria",
+    "higiene": "https://www.emporiomultimix.com.br/higiene-e-beleza",
+    "lanchonete": "https://www.emporiomultimix.com.br/lanchonete-e-frios",
+    "frios": "https://www.emporiomultimix.com.br/frios-e-laticinios",
+    "saudavel": "https://www.emporiomultimix.com.br/saudavel",
+    "bazar": "https://www.emporiomultimix.com.br/bazar",
+    "laticinios_embutidos": "https://www.emporiomultimix.com.br/frios-e-laticinios",
+    "mercearia_salgada": "https://www.emporiomultimix.com.br/mercearia-salgada"
+}
 
 def extrair_valor_numerico(texto_preco):
     try:
@@ -59,212 +47,85 @@ def extrair_valor_numerico(texto_preco):
     except:
         return 0.0
 
-def extrair_nome_pelo_link(url):
+async def raspar_categoria(context, nome_categoria, url_base):
+    print(f"\n🚀 Iniciando raspagem da categoria: {nome_categoria.upper()}")
+    page = await context.new_page()
+    
+    # Bloqueio simples de mídias para economizar banda do GitHub Actions
+    await page.route("**/*", lambda route: route.abort() if route.request.resource_type in ["image", "media", "font"] else route.continue_())
+    
     try:
-        parte_final = url.split('/')[-1]
-        nome_limpo = parte_final.split('?')[0]
+        await page.goto(url_base, wait_until="domcontentloaded", timeout=60000)
         
-        # Expressão regular para remover hífens seguidos de números no final da string
-        nome_sem_id = re.sub(r'-\d+$', '', nome_limpo)
+        # Rola a página para carregar os produtos (infinitescroll ou paginação dinâmica)
+        for _ in range(5):
+            await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            await asyncio.sleep(2)
+            
+        # Seleciona os cards de produto de acordo com a estrutura do e-commerce da Multimix
+        produtos = await page.locator(".product-item, .vtex-search-result-3-x-galleryItem").all()
+        print(f"📦 Encontrados {len(produtos)} produtos em {nome_categoria.upper()}")
         
-        nome_amigavel = nome_sem_id.replace('-', ' ').title()
-        return nome_amigavel
-    except:
-        return "Produto Sem Nome"
-
-def ler_dados_do_arquivo(nome_arquivo):
-    produtos_links = []
-    if not os.path.exists(nome_arquivo):
-        print(f"❌ Erro: O arquivo '{nome_arquivo}' não foi encontrado!")
-        return produtos_links
+        dados_para_salvar = []
         
-    print(f"✅ Arquivo de links encontrado: '{nome_arquivo}'")
-    
-    with open(nome_arquivo, 'r', encoding='utf-8') as f:
-        for linha in f:
-            linha = linha.strip()
-            if linha and not linha.startswith("#"):
-                if not linha.startswith("http"):
-                    url_completa = BASE_URL + linha if linha.startswith("/") else BASE_URL + "/" + linha
-                else:
-                    url_completa = linha
+        for produto in produtos:
+            try:
+                # Busca o nome e o preço dentro de cada card
+                nome_elem = produto.locator(".product-name, .vtex-product-summary-2-x-nameContainer")
+                preco_elem = produto.locator(".product-price, .vtex-product-price-1-x-currencyContainer")
                 
-                nome_produto = extrair_nome_pelo_link(url_completa)
-                produtos_links.append({"nome": nome_produto, "url": url_completa})
-                    
-    urls_vistas = set()
-    produtos_unicos = []
-    for p in produtos_links:
-        if p["url"] not in urls_vistas:
-            urls_vistas.add(p["url"])
-            produtos_unicos.append(p)
-
-    return produtos_unicos
-
-async def enviar_bloco_para_supabase():
-    global bloco_acumulador, contador_salvos
-    if not bloco_acumulador:
-        return
-
-    async with lock_banco:
-        try:
-            resposta = supabase.table("historico_precos").insert(bloco_acumulador).execute()
+                nome = await nome_elem.inner_text() if await nome_elem.count() > 0 else "Produto Sem Nome"
+                preco_txt = await preco_elem.inner_text() if await preco_elem.count() > 0 else "R$ 0,00"
+                
+                nome = nome.strip()
+                valor = extrair_valor_numerico(preco_txt)
+                
+                # SÓ ADICIONA SE TIVER PREÇO VÁLIDO
+                if valor > 0.0:
+                    # --- AQUI ESTÁ O NOVO MAPEAMENTO DE COLUNAS IA QUE VOCÊ ME PEDIU ---
+                    dados_para_salvar.append({
+                        "produto": nome,
+                        "valor_numerico": valor,
+                        "mercado_id": MERCADO_ID,
+                        "data_robo": datetime.now(timezone.utc).isoformat()
+                    })
+            except Exception as e:
+                continue
+                
+        # Salva o lote da categoria no Supabase
+        if dados_para_salvar:
+            print(f"💾 Enviando {len(dados_para_salvar)} produtos de '{nome_categoria}' para o Supabase...")
+            resposta = supabase.table("historico_precos").insert(dados_para_salvar).execute()
+            print(f"✅ Gravado com sucesso!")
             
-            if not resposta or not hasattr(resposta, 'data') or not resposta.data:
-                print("⚠️ [Supabase] Atenção: O comando foi enviado, mas o banco retornou uma estrutura vazia.")
-            else:
-                contador_salvos += len(bloco_acumulador)
-                print(f"💾 [Supabase] {len(bloco_acumulador)} produtos salvos! (Total gravado nesta rodada: {contador_salvos})")
-            
-            bloco_acumulador = []  # Limpa o bloco da memória
-        except Exception as e:
-            print(f"❌ ERRO CRÍTICO NO SUPABASE: {e}")
-            sys.exit(1)
-
-# Interceptador de requisições para bloquear mídias pesadas e rastreadores
-async def bloquear_recursos_pesados(route):
-    resource_type = route.request.resource_type
-    if resource_type in ["image", "stylesheet", "font", "media"] or "google" in route.request.url or "facebook" in route.request.url:
-        await route.abort()
-    else:
-        await route.continue_()
-
-async def raspar_produto_individual(sem, context, item, idx, total_itens):
-    """Roda de forma assíncrona, respeitando o limite de concorrência de 5 em 5"""
-    global bloco_acumulador
-    async with sem:
-        url = item["url"]
-        nome = item["nome"]
-        
-        page = await context.new_page()
-        page.set_default_timeout(15000)
-        await page.route("**/*", bloquear_recursos_pesados)
-        
-        try:
-            response = await page.goto(url, wait_until="domcontentloaded")
-            
-            if response and response.status >= 500:
-                print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor.")
-                return
-
-            tag_h1 = page.locator("h1").first
-            try:
-                await tag_h1.wait_for(state="visible", timeout=3000)
-                nome_real = await tag_h1.inner_text()
-                nome_real = nome_real.strip()
-                if nome_real:
-                    nome = nome_real
-            except:
-                pass
-
-            nome = re.sub(r'\s*\d+$', '', nome).strip()
-
-            preco_txt = "R$ 0,00"
-            try:
-                elemento_preco = page.locator(".precoPor, .price, strong:has-text('R$'), text=R$").first
-                await elemento_preco.wait_for(state="visible", timeout=3000)
-                texto_interno = await elemento_preco.inner_text()
-                preco_txt = texto_interno.strip().split('\n')[0]
-            except: 
-                pass
-
-            valor = extrair_valor_numerico(preco_txt)
-            
-            if valor == 0.0:
-                print(f"⚠️ [{idx}/{total_itens}] Alerta Gôndola: {nome[:35]:<35} | Valor veio zerado.")
-            else:
-                print(f"[{idx}/{total_itens}] Coletado: {nome[:40]:<40} | {preco_txt}")
-            
-            dados_produto = {
-                "produto": nome,
-                "valor_numerico": valor,
-                "mercado_id": MERCADO_ID,
-                "data_robo": datetime.now(timezone.utc).isoformat()
-            }
-
-            bloco_acumulador.append(dados_produto)
-            
-            if len(bloco_acumulador) >= TAMANHO_BLOCO_SALVAMENTO:
-                await enviar_bloco_para_supabase()
-            
-        except Exception as e:
-            print(f"❌ [{idx}/{total_itens}] Erro no item {nome[:25]}... | {str(e)[:40]}")
-        finally:
-            await page.close()
-
-async def realizar_raspagem_sessao(context, nome_arquivo):
-    """Executa a raspagem completa de uma única sessão de arquivos de links"""
-    global bloco_acumulador
-    
-    itens_para_rodar = ler_dados_do_arquivo(nome_arquivo)
-    if not itens_para_rodar: 
-        print(f"⚠️ Nenhum produto encontrado no arquivo: {nome_arquivo}")
-        return False
-
-    total_itens = len(itens_para_rodar)
-    print(f"📂 Processando Sessão: {nome_arquivo} | Itens: {total_itens}")
-
-    sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
-    
-    # Executa todos os itens da sessão usando concorrência assíncrona de 5 em 5
-    tarefas = [
-        raspar_produto_individual(sem, context, item, idx, total_itens)
-        for idx, item in enumerate(itens_para_rodar, start=1)
-    ]
-    
-    await asyncio.gather(*tarefas)
-        
-    # Garante que qualquer dado restante no acumulador seja salvo ao final desta sessão específica
-    if bloco_acumulador:
-        await enviar_bloco_para_supabase()
-        
-    return True
+    except Exception as e:
+        print(f"❌ Erro ao raspar a categoria {nome_categoria}: {e}")
+    finally:
+        await page.close()
 
 async def main():
-    fuso_brasilia = pytz.timezone('America/Sao_Paulo')
-    hora_inicio = datetime.now(fuso_brasilia).strftime('%d/%m/%Y %H:%M:%S')
+    # Detecta se rodamos uma categoria específica passada por argumento no GitHub Actions (ex: python meu_robo.py acougue)
+    categoria_alvo = sys.argv[1].strip().lower() if len(sys.argv) > 1 else None
     
-    # 1. Determina quais arquivos de links processar
-    if len(sys.argv) > 1:
-        categoria = sys.argv[1].strip().lower()
-        arquivos_fila = [f"links_{categoria}.txt"]
-        modo_unico = True
-        print(f"📂 Modo de Categoria Única Selecionado: {categoria.upper()}")
-    else:
-        arquivos_fila = [f"links_{cat}.txt" for cat in SESSOES_PADRAO]
-        modo_unico = False
-        print("📂 Modo Varredura Geral Selecionado (Múltiplas Categorias).")
-
-    print("-" * 60)
-    print(f"⏰ [INFO] O robô começou a rodar oficialmente em: {hora_inicio}")
-    print(f"🚀 Varredura Iniciada (ID do Distrito Alvo: {MERCADO_ID})")
-    print(f"Fila de Arquivos: {arquivos_fila}")
-    print(f"Fluxo Concorrente: {MAX_CONCURRENT_TASKS} produtos por vez")
-    print(f"Pausa entre Sessões: {PAUSA_ENTRE_SESSOES} segundos")
-    print("-" * 60)
-
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         )
         
-        total_arquivos = len(arquivos_fila)
-        for index, arquivo in enumerate(arquivos_fila):
-            # Executa a raspagem completa do arquivo atual da vez
-            sucesso = await realizar_raspagem_sessao(context, arquivo)
-            
-            # Se não for o último arquivo e a raspagem da sessão foi bem sucedida, aplica a pausa estruturada
-            if sucesso and not modo_unico and index < total_arquivos - 1:
-                print(f"\n⏳ Sessão de '{arquivo}' finalizada com dados salvos.")
-                print(f"💤 Entrando em repouso por {PAUSA_ENTRE_SESSOES} segundos antes de iniciar o próximo arquivo...")
-                await asyncio.sleep(PAUSA_ENTRE_SESSOES)
-                print("⏰ Fim da pausa! Retomando varredura...\n")
+        if categoria_alvo:
+            if categoria_alvo in SESSÕES:
+                await raspar_categoria(context, categoria_alvo, SESSÕES[categoria_alvo])
+            else:
+                print(f"❌ Categoria '{categoria_alvo}' não encontrada no mapeamento do robô.")
+        else:
+            # Varredura completa se nenhum argumento for passado
+            for cat, url in SESSÕES.items():
+                await raspar_categoria(context, cat, url)
+                await asyncio.sleep(5)  # Respiro leve de 5 segundos entre categorias
                 
         await context.close()
         await browser.close()
-        
-    print(f"\n🎉 Varredura Geral Concluída! Total Novo Gravado no Supabase nesta rodada: {contador_salvos} itens.")
 
 if __name__ == "__main__":
     asyncio.run(main())
