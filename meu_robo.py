@@ -125,8 +125,8 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
         page.set_default_timeout(25000)
         
         try:
-            # Trocado para 'domcontentloaded' para acelerar o processo, já que esperamos o seletor logo abaixo
-            response = await page.goto(url, wait_until="domcontentloaded")
+            # Alterado para 'load' para garantir o carregamento correto de scripts assíncronos de preços
+            response = await page.goto(url, wait_until="load")
             
             if response and response.status >= 500:
                 print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor.")
@@ -145,7 +145,8 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
             nome = re.sub(r'\s*\d+$', '', nome).strip()
             preco_txt = "R$ 0,00"
             try:
-                elemento_preco = page.locator(".precoPor, .price, strong:has-text('R$'), text=R$").first
+                # Seletor otimizado para focar em classes estruturais de preço primeiro
+                elemento_preco = page.locator(".precoPor, .price, .product-price, strong:has-text('R$')").first
                 await elemento_preco.wait_for(state="visible", timeout=5000)
                 texto_interno = await elemento_preco.inner_text()
                 preco_txt = texto_interno.strip().split('\n')[0]
