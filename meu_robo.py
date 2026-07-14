@@ -88,7 +88,7 @@ async def enviar_bloco_para_supabase():
 
     async with lock_banco:
         try:
-            # Executa a chamada síncrona do Supabase em uma Thread para não bloquear o Event Loop do Asyncio
+            # Executa a chamada síncrona do Supabase em uma Thread para não bloquear o Event Loop
             resposta = await asyncio.to_thread(
                 supabase.table("historico_precos").insert(bloco_acumulador).execute
             )
@@ -125,28 +125,32 @@ async def raspar_produto_individual(sem, browser, item, idx, total_itens):
         page.set_default_timeout(25000)
         
         try:
-            # Alterado para 'load' para garantir o carregamento correto de scripts assíncronos de preços
+            # Carregamento completo do site para que os scripts e preços apareçam
             response = await page.goto(url, wait_until="load")
             
             if response and response.status >= 500:
                 print(f"⚠️ [{idx}/{total_itens}] Pulado: Erro {response.status} no servidor.")
                 return
 
-            tag_h1 = page.locator("h1").first
+            # Tenta pegar o nome do produto de forma flexível na nova estrutura do site
             try:
-                await tag_h1.wait_for(state="visible", timeout=5000)
-                nome_real = await tag_h1.inner_text()
+                # Prioriza H1, depois busca classes de nome/título de produtos ou H2
+                tag_titulo = page.locator("h1, .product-name, [class*='title'], h2").first
+                await tag_titulo.wait_for(state="visible", timeout=4000)
+                nome_real = await tag_titulo.inner_text()
                 nome_real = nome_real.strip()
                 if nome_real:
                     nome = nome_real
             except:
                 pass
 
+            # Limpa ID numérico que às vezes fica colado no final do título
             nome = re.sub(r'\s*\d+$', '', nome).strip()
+            
             preco_txt = "R$ 0,00"
             try:
-                # Seletor otimizado para focar em classes estruturais de preço primeiro
-                elemento_preco = page.locator(".precoPor, .price, .product-price, strong:has-text('R$')").first
+                # SELETOR CORRIGIDO: Usa o seletor 'span:has-text' que validamos no teste
+                elemento_preco = page.locator("span:has-text('R$')").first
                 await elemento_preco.wait_for(state="visible", timeout=5000)
                 texto_interno = await elemento_preco.inner_text()
                 preco_txt = texto_interno.strip().split('\n')[0]
