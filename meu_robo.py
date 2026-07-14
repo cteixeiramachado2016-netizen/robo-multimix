@@ -36,7 +36,7 @@ def extrair_nome_pelo_link(url):
         nome_limpo = parte_final.split('?')[0]
         nome_sem_id = re.sub(r'-\d+$', '', nome_limpo)
         nome_amigavel = nome_sem_id.replace('-', ' ').title()
-        return nome_amigavel
+        return nome_amigavel if len(nome_amigavel.strip()) > 0 else "Produto Sem Nome"
     except:
         return "Produto Sem Nome"
 
@@ -70,16 +70,13 @@ async def testar_link(browser, url, idx, total):
         print(f"🔄 [{idx}/{total}] Acessando: {url}")
         await page.goto(url, wait_until="load")
         
-        # 1. Nome do produto extraído de forma segura da URL (evita "Nossas Lojas")
         nome_produto = extrair_nome_pelo_link(url)
-        
-        # 2. Testa os seletores de preço (para ao achar o primeiro válido)
         preco_detectado = "R$ 0,00"
         valor_numerico = 0.0
         
         try:
             elemento = page.locator("span:has-text('R$')").first
-            await elemento.wait_for(state="visible", timeout=4000)
+            await elemento.wait_for(state="visible", timeout=5000)
             texto = await elemento.inner_text()
             texto_limpo = texto.strip().split('\n')[0]
             
@@ -90,7 +87,6 @@ async def testar_link(browser, url, idx, total):
         except Exception as e:
             print(f"⚠️ Falha ao ler preço no link {url}: {str(e)[:40]}")
 
-        # Estrutura simplificada solicitada por você
         resultado_salvar = {
             "produto": nome_produto,
             "valor_numerico": valor_numerico,
@@ -125,18 +121,17 @@ async def main():
         
         for idx, url in enumerate(links, start=1):
             res = await testar_link(browser, url, idx, len(links))
-            if res and res["valor_numerico"] > 0.0: # Apenas salva se obteve sucesso
+            if res: # Salvamos mesmo se o preço for 0 para registrar a falha (assim como o de teste faz)
                 resultados.append(res)
                 
         await browser.close()
         
-        # Envia resultados direto para o Supabase remodelado
+        # Envia resultados direto para o Supabase (Correção aplicada aqui)
         if resultados:
             try:
-                await asyncio.to_thread(
-                    supabase.table("teste_seletores_log").insert(resultados).execute
-                )
-                print(f"💾 {len(resultados)} relatórios simplificados gravados no banco!")
+                # Mudança para a chamada síncrona direta que funciona de forma estável
+                supabase.table("teste_seletores_log").insert(resultados).execute()
+                print(f"💾 {len(resultados)} relatórios gravados no banco com sucesso!")
             except Exception as e:
                 print(f"❌ Erro ao salvar logs no Supabase: {e}")
 
