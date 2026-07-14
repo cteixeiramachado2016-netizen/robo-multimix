@@ -4,21 +4,14 @@ import sys  # Captura a sessão via linha de comando
 import asyncio
 from datetime import datetime, timezone  # <--- Incluído timezone nativo para o formato do Supabase
 import pytz  # Certifique-se de que está no seu requirements.txt ou setup do workflow
-from dotenv import load_dotenv
 from playwright.async_api import async_playwright
 from supabase import create_client, Client
 
-# 1. Carrega as chaves do seu arquivo personalizado e organizado
-load_dotenv("credenciais_supabase.env")
+# --- SUAS CREDENCIAIS DO SUPABASE REORGANIZADAS ---
+SUPABASE_URL = "https://uqovffvxtskmbycldmwd.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxb3ZmZnZ4dHNrbWJ5Y2xkbXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyNTgzMTEsImV4cCI6MjA1NDgzNDMxMX0.r7l72S69FidA2_D9_B98T5_vC_S-3vWreV-rGz6-RkQ"
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
-
-if not SUPABASE_URL or not SUPABASE_KEY:
-    print("❌ Erro: Chaves do Supabase não encontradas!")
-    exit(1)
-
-# Inicializa o cliente do Supabase
+# Inicializa o cliente do Supabase com as chaves injetadas diretamente
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- CONFIGURAÇÕES DE BANCO E RASPAGEM ---
