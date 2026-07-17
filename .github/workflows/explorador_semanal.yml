@@ -9,6 +9,10 @@ on:
 jobs:
   explorar:
     runs-on: ubuntu-latest
+    
+    # 🔑 ADICIONADO: Permite que o robô faça alterações e dê push no repositório
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout do repositório
