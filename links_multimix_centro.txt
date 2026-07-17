@@ -1,15 +1,20 @@
+# SESSAO: Açougue Bovino
 https://www.emporiomultimix.com.br/comestiveis-matriz/acougue-bovino-617?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/acougue-bovino-617?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/acougue-bovino-617?page=3
 https://www.emporiomultimix.com.br/comestiveis-matriz/acougue-bovino-617?page=4
 https://www.emporiomultimix.com.br/comestiveis-matriz/acougue-bovino-617?page=5
 https://www.emporiomultimix.com.br/comestiveis-matriz/acougue-bovino-617?page=6
+
+# SESSAO: Hortifruti
 https://www.emporiomultimix.com.br/comestiveis-matriz/hortifruit-596?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/hortifruit-596?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/hortifruit-596?page=3
 https://www.emporiomultimix.com.br/comestiveis-matriz/hortifruit-596?page=4
 https://www.emporiomultimix.com.br/comestiveis-matriz/hortifruit-596?page=5
 https://www.emporiomultimix.com.br/comestiveis-matriz/hortifruit-596?page=6
+
+# SESSAO: Bebidas Alcoólicas
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-605?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-605?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-605?page=3
@@ -17,6 +22,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-605?pag
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-605?page=5
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-605?page=6
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-605?page=7
+
+# SESSAO: Bebidas Alcoólicas - Vinhos
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-vinhos-735?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-vinhos-735?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-vinhos-735?page=3
@@ -32,9 +39,11 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-vinhos-
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-vinhos-735?page=13
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-vinhos-735?page=14
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-alcoolicas-vinhos-735?page=15
+
+# SESSAO: Bebidas Não Alcoólicas
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=2
-https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=3
+https://www.emporiomultimix.com.br/comestiveis-nao-alcoolicas-611?page=3
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=4
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=5
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=6
@@ -49,6 +58,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=15
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=16
 https://www.emporiomultimix.com.br/comestiveis-matriz/bebidas-nao-alcoolicas-611?page=17
+
+# SESSAO: Congelados
 https://www.emporiomultimix.com.br/comestiveis-matriz/congelados-613?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/congelados-613?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/congelados-613?page=3
@@ -59,6 +70,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/congelados-613?page=7
 https://www.emporiomultimix.com.br/comestiveis-matriz/congelados-613?page=8
 https://www.emporiomultimix.com.br/comestiveis-matriz/congelados-613?page=9
 https://www.emporiomultimix.com.br/comestiveis-matriz/congelados-613?page=10
+
+# SESSAO: Limpeza
 https://www.emporiomultimix.com.br/comestiveis-matriz/limpeza-593?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/limpeza-593?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/limpeza-593?page=3
@@ -76,6 +89,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/limpeza-593?page=14
 https://www.emporiomultimix.com.br/comestiveis-matriz/limpeza-593?page=15
 https://www.emporiomultimix.com.br/comestiveis-matriz/limpeza-593?page=16
 https://www.emporiomultimix.com.br/comestiveis-matriz/limpeza-593?page=17
+
+# SESSAO: Mercearia Doce
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-doce-591?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-doce-591?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-doce-591?page=3
@@ -117,17 +132,29 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-doce-591?page=38
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-doce-591?page=39
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-doce-591?page=40
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-doce-591?page=41
+
+# SESSAO: Padaria - Produção da Casa
 https://www.emporiomultimix.com.br/comestiveis-matriz/padaria-producao-da-casa-651?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/padaria-producao-da-casa-651?page=2
+
+# SESSAO: Padaria - Industrializado
 https://www.emporiomultimix.com.br/comestiveis-matriz/padaria-industrializado-691?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/padaria-industrializado-691?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/padaria-industrializado-691?page=3
 https://www.emporiomultimix.com.br/comestiveis-matriz/padaria-industrializado-691?page=4
 https://www.emporiomultimix.com.br/comestiveis-matriz/padaria-industrializado-691?page=5
+
+# SESSAO: Produtos para Animais
 https://www.emporiomultimix.com.br/comestiveis-matriz/produtos-para-animais-668?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/produtos-para-animais-668?page=2
+
+# SESSAO: Peixes
 https://www.emporiomultimix.com.br/comestiveis-matriz/peixes-633
+
+# SESSAO: Lanchonete
 https://www.emporiomultimix.com.br/comestiveis-matriz/lanchonete-630
+
+# SESSAO: Higiene e Perfumaria
 https://www.emporiomultimix.com.br/comestiveis-matriz/higiene-e-perfumaria-608?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/higiene-e-perfumaria-608?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/higiene-e-perfumaria-608?page=3
@@ -139,7 +166,11 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/higiene-e-perfumaria-608?p
 https://www.emporiomultimix.com.br/comestiveis-matriz/higiene-e-perfumaria-608?page=9
 https://www.emporiomultimix.com.br/comestiveis-matriz/higiene-e-perfumaria-608?page=10
 https://www.emporiomultimix.com.br/higiene-e-perfumaria-608?page=11
+
+# SESSAO: Frios e Laticínios
 https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-636
+
+# SESSAO: Frios e Laticínios - Iogurtes, Linguiças, Massas
 https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-iogurtlinguicasmassas-819?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-iogurtlinguicasmassas-819?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-iogurtlinguicasmassas-819?page=3
@@ -150,14 +181,20 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-iogurtl
 https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-iogurtlinguicasmassas-819?page=8
 https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-iogurtlinguicasmassas-819?page=9
 https://www.emporiomultimix.com.br/comestiveis-matriz/frios-e-laticinios-iogurtlinguicasmassas-819?page=10
+
+# SESSAO: Alimentação Saudável
 https://www.emporiomultimix.com.br/comestiveis-matriz/alimentacao-saudavel-664?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/alimentacao-saudavel-664?page=2
+
+# SESSAO: Bazar
 https://www.emporiomultimix.com.br/comestiveis-matriz/bazar-600?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/bazar-600?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/bazar-600?page=3
 https://www.emporiomultimix.com.br/comestiveis-matriz/bazar-600?page=4
 https://www.emporiomultimix.com.br/comestiveis-matriz/bazar-600?page=5
 https://www.emporiomultimix.com.br/comestiveis-matriz/bazar-600?page=6
+
+# SESSAO: Mercearia Salgada - Azeite, Massas, Temperos
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-salgada-azeitemassatemperos-849?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-salgada-azeitemassatemperos-849?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-salgada-azeitemassatemperos-849?page=3
@@ -181,6 +218,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-salgada-azeitema
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-salgada-azeitemassatemperos-849?page=21
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-salgada-azeitemassatemperos-849?page=22
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-salgada-azeitemassatemperos-849?page=23
+
+# SESSAO: Mercearia Seca - Açúcar, Arroz, Feijão
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-seca-acucararrozfeijao-805?page=1
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-seca-acucararrozfeijao-805?page=2
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-seca-acucararrozfeijao-805?page=3
@@ -188,3 +227,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-seca-acucararroz
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-seca-acucararrozfeijao-805?page=5
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-seca-acucararrozfeijao-805?page=6
 https://www.emporiomultimix.com.br/comestiveis-matriz/mercearia-seca-acucararrozfeijao-805?page=7
+
+# SESSAO: Promocoes
+
