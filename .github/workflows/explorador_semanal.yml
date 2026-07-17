@@ -2,53 +2,45 @@ name: Pipeline Semanal - Explorador de Links
 
 on:
   schedule:
-    # 🕒 Configurado para disparar todo domingo às 01:00 da manhã (Horário de Brasília / 04:00 UTC)
-    # Nota: O agendador do GitHub pode sofrer atrasos dependendo do volume de servidores ocupados.
-    - cron: '0 4 * * 0'
-  # Permite que você clique no botão para rodar manualmente se quiser atualizar os links na hora
-  workflow_dispatch:
-
-# Garante permissão para o script salvar o novo arquivo de links gerado dentro do seu repositório
-permissions:
-  contents: write
+    # Roda todos os dias à meia-noite (00:00 UTC) -> Ajuste para rodar a cada 24 horas
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Permite que você continue rodando manualmente quando quiser
 
 jobs:
-  atualizar-links:
+  explorar:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 1. Baixar código do repositório
-        uses: actions/checkout@v4
+    - name: Checkout do repositório
+      uses: actions/checkout@v4
 
-      - name: 2. Configurar o Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+    - name: Configurar o Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-      - name: 3. Instalar dependências do Python
-        run: |
-          python -m pip install --upgrade pip
-          pip install playwright pandas openpyxl requests beautifulsoup4 python-dotenv supabase
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
 
-      - name: 4. Instalar Navegadores e Dependências do Sistema
-        run: |
-          playwright install chromium
-          playwright install-deps chromium
+    - name: Executar Explorador de Links
+      run: |
+        python explorador_multimix_centro.py
 
-      # ESPECÍFICO: Roda apenas o explorador para atualizar o arquivo de texto com links novos
-      - name: 5. Executar Explorador de Links
-        run: python explorador_multimix_centro.py
-
-      # CRÍTICO: Salva e atualiza o seu arquivo TXT no GitHub para o 'meu_robo.py' ler todo dia
-      - name: 6. Salvar novos links no repositório
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add links_multimix.txt produtos_multimix_centro.txt || true
-          
-          if ! git diff --cached --quiet; then
-            git commit -m "Automação Semanal: Links de produtos atualizados no repositório"
-            git push
-          else
-            echo "Nenhum link novo ou alteração encontrada nesta semana."
-          fi
+    - name: Salvar e subir novos links para o GitHub
+      run: |
+        # Configura as credenciais do Git usando a conta do robô do GitHub
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        # Adiciona o arquivo links_multimix.txt que foi gerado/atualizado
+        git add links_multimix.txt
+        
+        # Verifica se realmente há mudanças antes de commitar para não dar erro
+        if git diff --staged --quiet; then
+          echo "Nenhuma mudança detectada em links_multimix.txt. Pulando commit."
+        else
+          git commit -m "bot: 🚀 links_multimix.txt atualizado automaticamente pelo explorador"
+          git push origin main
+        fi
