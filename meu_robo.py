@@ -125,8 +125,8 @@ async def testar_link(browser, url, sessao, idx, total):
                 "produto": nome_produto,
                 "valor_numerico": valor_numerico,
                 "mercado_id": "1",
-                "sessao": sessao,  # 🔑 Enviando a sessão estruturada para o banco
-                "link": url,       # 🔑 Enviando o link completo para o banco
+                "sessao": sessao,  # Enviando a sessão estruturada para o banco
+                "link": url,       # Enviando o link completo para o banco
                 "data_robo": datetime.now(timezone.utc).isoformat()
             }
             print(f"✅ SUCESSO: '{nome_produto[:30]}' | Preço: {preco_detectado} | Sessão: {sessao}")
@@ -139,6 +139,21 @@ async def testar_link(browser, url, sessao, idx, total):
         
     return resultado_salvar
 
+def limpar_banco_supabase():
+    """
+    Remove todos os registros da tabela historico_precos antes de inserir os novos dados.
+    Utiliza um filtro que sempre é verdadeiro para limpar tudo com segurança.
+    """
+    try:
+        print("🧹 Limpando dados antigos da tabela 'historico_precos' no Supabase...")
+        # Deleta todos os registros onde o id é maior que zero (limpa toda a tabela)
+        supabase.table("historico_precos").delete().gt("id", 0).execute()
+        print("✨ Tabela limpa com sucesso! Pronta para novos dados.")
+        return True
+    except Exception as e:
+        print(f"⚠️ Aviso/Erro ao limpar tabela (pode ser restrição de políticas RLS ou tabela já vazia): {e}")
+        return False
+
 def salvar_no_supabase(dados):
     try:
         # Enviando para a tabela de produção: historico_precos
@@ -150,11 +165,14 @@ def salvar_no_supabase(dados):
         return False
 
 async def main():
-    # Agora recebemos uma lista de tuplas: [(url, sessao), ...]
+    # 1. Carrega os links do arquivo
     links_mapeados = ler_links_com_sessao()
     if not links_mapeados:
         print("⚠️ Nenhum link de teste ou produção encontrado.")
         return
+    
+    # 2. 🔑 LIMPA O BANCO ANTES DE COMEÇAR O FLUXO
+    limpar_banco_supabase()
         
     total_links = len(links_mapeados)
     print(f"🚀 Iniciando raspagem pesada para {total_links} URLs estruturadas por sessões...")
