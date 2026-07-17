@@ -7,27 +7,17 @@ from bs4 import BeautifulSoup
 arquivo_entrada = "links_multimix_centro.txt"
 arquivo_saida = "links_multimix.txt"
 
-links_unicos = set()
+# Dicionário para agrupar os links por sessão
+# Estrutura: { "Açougue Bovino": {link1, link2}, "Hortifruti": {link1, link2} }
+dados_por_sessao = {}
+sessao_atual = "Sem Categoria"
 
-print("🚀 Iniciando varredura otimizada no explorador_multimix_centro.py")
+print("🚀 Iniciando varredura organizada por sessões no explorador_multimix_centro.py")
 
 # Verificar se o arquivo com as sessões existe antes de iniciar
 if not os.path.exists(arquivo_entrada):
     print(f"❌ Erro crítico: O arquivo de entrada '{arquivo_entrada}' não foi encontrado!")
     exit()
-
-# 1. Carregar as URLs de sessões do arquivo de texto de forma limpa
-urls_para_raspar = []
-with open(arquivo_entrada, "r", encoding="utf-8") as f:
-    for linha in f:
-        linha = linha.strip()
-        # Ignora linhas vazias ou comentários de sessão (linhas que começam com #)
-        if not linha or linha.startswith("#"):
-            continue
-        urls_para_raspar.append(linha)
-
-total_urls = len(urls_para_raspar)
-print(f"📂 Carregados {total_urls} links de páginas/sessões para processamento.")
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -35,10 +25,33 @@ headers = {
 
 domínio_base = "https://www.emporiomultimix.com.br"
 
-# 2. Varredura link por link baseado no arquivo de entrada
-for idx, url in enumerate(urls_para_raspar, start=1):
-    print(f"\n🔄 [{idx}/{total_urls}] Conectando em: {url}")
+# 1. Ler o arquivo de entrada linha por linha para detectar as sessões e links
+urls_tarefa = []
+with open(arquivo_entrada, "r", encoding="utf-8") as f:
+    for linha in f:
+        linha = linha.strip()
+        if not linha:
+            continue
+        
+        # Se for uma linha de sessão (ex: # SESSAO: Açougue Bovino)
+        if linha.startswith("#"):
+            sessao_atual = linha.replace("#", "").replace("SESSAO:", "").strip()
+            continue
+            
+        # Guarda a URL associada à sessão em que ela foi encontrada
+        urls_tarefa.append((linha, sessao_atual))
+
+total_urls = len(urls_tarefa)
+print(f"📂 Carregados {total_urls} links de páginas mapeados por suas sessões.")
+
+# 2. Varredura e extração
+for idx, (url, sessao) in enumerate(urls_tarefa, start=1):
+    print(f"\n🔍 [{idx}/{total_urls}] Processando para [{sessao}] -> Conectando em: {url}")
     
+    # Inicializa o set da sessão se ainda não existir no dicionário
+    if sessao not in dados_por_sessao:
+        dados_por_sessao[sessao] = set()
+        
     try:
         response = requests.get(url, headers=headers, timeout=20)
         
@@ -55,9 +68,7 @@ for idx, url in enumerate(urls_para_raspar, start=1):
             
             # Filtro para capturar apenas links de produtos reais
             if "/produto/" in href or "-p" in href:
-                # 🔧 AJUSTE AQUI: Garante que todos os links comecem com o domínio completo
                 if not href.startswith("http"):
-                    # Se o link começar com barra "/", junta com o domínio
                     if href.startswith("/"):
                         href = f"{domínio_base}{href}"
                     else:
@@ -65,37 +76,44 @@ for idx, url in enumerate(urls_para_raspar, start=1):
                 
                 links_pagina.append(href)
         
-        links_pagina = list(set(links_pagina))
+        # Remove duplicados da página atual antes de adicionar ao set da sessão
+        links_pagina = set(links_pagina)
         
         if not links_pagina:
             print("   ↳ ⚠️ Nenhum link de produto extraído desta página.")
             continue
         
-        # Medição de novos links reais injetados no set global
-        tamanho_antes = len(links_unicos)
+        tamanho_antes = len(dados_por_sessao[sessao])
         for link in links_pagina:
-            links_unicos.add(link)
+            dados_por_sessao[sessao].add(link)
             
-        novos_links = len(links_unicos) - tamanho_antes
-        print(f"   ↳ ✅ Sucesso: +{novos_links} novos links de produtos únicos (Total acumulado: {len(links_unicos)}).")
+        novos_links = len(dados_por_sessao[sessao]) - tamanho_antes
+        print(f"   ↳ ✅ Sucesso: +{novos_links} novos links adicionados à sessão [{sessao}].")
         
-        # Intervalo amigável para evitar bloqueio do servidor
         time.sleep(1.0)
         
     except Exception as e:
         print(f"   ↳ ❌ Erro de conexão/processamento: {str(e)[:50]}")
         continue
 
-# 3. Gravação definitiva no arquivo final links_multimix.txt
-print("\n💾 Finalizando e checando integridade dos dados...")
+# 3. Gravação definitiva e estruturada por sessões no arquivo final
+print("\n💾 Finalizando e estruturando arquivo de saída...")
 
-if len(links_unicos) > 0:
+total_total_links = sum(len(links) for links in dados_por_sessao.values())
+
+if total_total_links > 0:
     with open(arquivo_saida, "w", encoding="utf-8") as f:
-        for link in sorted(links_unicos):
-            f.write(f"{link}\n")
-    print(f"✅ Arquivo de saída gerado com sucesso: '{arquivo_saida}'")
-    print(f"📦 Total de {len(links_unicos)} links de produtos únicos armazenados!")
+        # Passa por cada sessão coletada na ordem alfabética ou original
+        for sessao, links in sorted(dados_por_sessao.items()):
+            if links: # Só escreve a sessão se ela tiver algum produto
+                f.write(f"\n# SESSAO: {sessao}\n")
+                # Escreve todos os links daquela sessão ordenados
+                for link in sorted(links):
+                    f.write(f"{link}\n")
+                    
+    print(f"✅ Arquivo de saída '{arquivo_saida}' gerado com absoluto sucesso!")
+    print(f"📦 Total de {total_total_links} links de produtos únicos distribuídos por suas respectivas sessões!")
 else:
-    print("❌ Falha crítica: Nenhum link foi capturado nesta rodada. O arquivo antigo foi preservado por segurança.")
+    print("❌ Falha crítica: Nenhum link foi capturado nesta rodada.")
 
-print("🏁 Fim do pipeline de extração para o Multimix Centro!")
+print("🏁 Fim do pipeline de extração estruturado por sessões!")
