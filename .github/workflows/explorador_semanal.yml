@@ -1,38 +1,4 @@
-name: Pipeline Semanal - Explorador de Links
-
-on:
-  schedule:
-    # Roda todos os dias à meia-noite (00:00 UTC) -> Ajuste para rodar a cada 24 horas
-    - cron: '0 0 * * *'
-  workflow_dispatch: # Permite que você continue rodando manualmente quando quiser
-
-jobs:
-  explorar:
-    runs-on: ubuntu-latest
-    
-    # 🔑 ADICIONADO: Permite que o robô faça alterações e dê push no repositório
-    permissions:
-      contents: write
-
-    steps:
-    - name: Checkout do repositório
-      uses: actions/checkout@v4
-
-    - name: Configurar o Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Instalar dependências
-      run: |
-        python -m pip install --upgrade pip
-        pip install requests beautifulsoup4
-
-    - name: Executar Explorador de Links
-      run: |
-        python explorador_multimix_centro.py
-
-    - name: Salvar e subir novos links para o GitHub
+- name: Salvar e subir novos links para o GitHub
       run: |
         # Configura as credenciais do Git usando a conta do robô do GitHub
         git config --global user.name "github-actions[bot]"
@@ -46,5 +12,9 @@ jobs:
           echo "Nenhuma mudança detectada em links_multimix.txt. Pulando commit."
         else
           git commit -m "bot: 🚀 links_multimix.txt atualizado automaticamente pelo explorador"
+          
+          # 🔑 O SEGREDO ESTÁ AQUI: Puxa as alterações recentes do repositório antes de enviar as dele
+          git pull --rebase origin main
+          
           git push origin main
         fi
