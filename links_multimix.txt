@@ -80,7 +80,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-bovina-m
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-bovina-moida-light-kg-131371
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-bovina-pecapedaco-kg-131372
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-com-maminha-pct-fechado-kg-131273
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-corte-baby-beef-miolo-de-alcatra-kg-131373
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-corte-bombom-de-alcatra-kg-131374
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-corte-steak-acogueiro-kg-131375
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alcatra-corte-strogonoff-kg-131376
@@ -88,31 +87,23 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/baby-beef-perdig
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bacon-berna-defumado-fatiado-200g-124461
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bacon-perdigao-fatiado-250g-135391
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bacon-perdigao-manta-kg-124463
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bacon-sadia-em-cubos-140g-124464
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bacon-sadia-manta-kg-124466
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bife-de-ancho-entrecote-maturatta-friboi-kg-124700
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-de-alcatra-bovina-bassi-resfriada-kg-134887
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/carne-seca-friboi-traseiro-400g-125245
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/carne-seca-friboi-traseiro-500g-125246
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/carne-seca-suina-seara-400g-133839
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-corte-ancho-chef-kg-131773
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-corte-chorizo-chef-kg-131772
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-corte-grill-chef-kg-131774
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-em-bife-kg-131775
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-extra-limpo-kg-131776
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-friboi-maturatta-kg-125711
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-light-kg-131777
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-moido-kg-131778
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-moido-light-kg-131779
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-pacote-fechado-kg-131275
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/contra-file-pecapedaco-kg-131780
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coracao-de-alcatra-friboi-maturatta-miolo-kg-125732
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/costela-bovina-tiras-congelada-kg-125737
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/costela-suina-frimesa-defumada-kg-125741
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-bife-light-cha-kg-131804
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-corte-assado-campestre-cha-kg-131805
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-corte-strogonoff-cha-kg-131806
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-cubo-brochet-cha-kg-131807
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-em-bife-cha-kg-131808
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-em-bife-paris-cha-kg-131809
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-extra-limpo-cha-kg-131810
@@ -121,17 +112,13 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-moido
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-moido-light-cha-kg-131813
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-pacote-fechado-a-vacuo-cha-kg-131276
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coxao-mole-pecapedaco-cha-kg-131814
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/dobradinha-bovina-bucho-kg-126028
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/figado-bovino-kg-126412
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-bife-kg-131946
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-boa-carne-a-vacuo-kg-135778
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-bovino-pecapedaco-kg-131955
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-extra-limpo-kg-131947
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-medalhao-kg-131952
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-moido-kg-131953
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-moido-light-kg-131954
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-montana-na-brasa-pacote-fechado-kg-134912
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-rosbife-kg-131956
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/file-mignon-strogonoff-kg-131957
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/fraldinha-bovina-moida-kg-131985
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/fraldinha-perdigao-montana-fechado-a-vacuo-kg-135378
@@ -139,8 +126,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/guanciale-cubeta
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-bife-coxao-duro-kg-132094
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-bife-redbeef-coxao-duro-kg-132095
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-bife-stretto-coxao-duro-kg-132096
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-corte-assado-a-mineira-kg-132097
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-corte-bife-roule-kg-132098
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-corte-cozido-a-brasileira-kg-132099
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-coxao-duro-moido-kg-132092
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-coxao-duro-moido-light-kg-132093
@@ -148,24 +133,16 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-co
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-extra-limpo-coxao-duro-kg-132100
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-plano-pecapedaco-coxao-duro-kg-132101
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-bife-escabeche-kg-132102
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-bife-kg-132103
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-corte-assado-americano-kg-132104
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-corte-bife-palha-kg-132105
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-corte-lagarto-paulistinha-kg-132106
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-corte-picadinho-magro-kg-132107
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-extra-limpo-kg-132108
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-moido-kg-132110
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-moido-light-kg-132111
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-pacote-fechado-a-vacuo-kg-132109
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-pecapedaco-kg-132112
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lagarto-redondo-sanfonado-kg-132113
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/lingua-bovina-kg-127128
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-berna-mista-com-queijo-provolone-caracol-400g-130854
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-perdigao-calabresa-kg-127137
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-perdigao-paio-curada-kg-127144
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-sadia-calabresa-kg-127146
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-sadia-mista-fina-defumada-kg-127147
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-bovina-bife-kg-132187
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-bovina-extra-limpa-kg-132188
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-bovina-moida-kg-132189
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-bovina-moida-light-kg-132190
@@ -173,10 +150,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-bovina-p
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-grill-kg-132192
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-nobre-baby-kg-132193
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maminha-sanfonada-kg-132194
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mocoto-bovino-kg-127571
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/musculo-bovino-mole-especial-kg-132287
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/musculo-bovino-picado-extra-limpo-kg-132288
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/musculo-bovino-primeira-medalhao-kg-132289
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/musculo-bovino-primeira-moido-kg-132290
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/musculo-bovino-primeira-moido-light-kg-132291
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/musculo-bovino-primeira-pecapedaco-kg-132292
@@ -187,8 +160,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-bovina-moido-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-bovina-moido-light-kg-132353
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-bovina-pacote-fechado-a-vacuo-pedido-minimo-peca-fechada-c-ap-925kg-valor-por-kg-132350
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-bovina-pecapedaco-kg-132354
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-bovino-peixinho-kg-132355
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-corte-assado-ingles-bola-da-pa-kg-132356
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-corte-bovino-peixinho-sanfonado-kg-132357
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-em-bife-borboleta-kg-132358
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-em-bife-corte-milaneza-kg-132359
@@ -196,7 +167,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pa-em-cubos-kg-1
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/patinho-corte-duck-beef-kg-132439
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/patinho-corte-flanbeef-kg-132440
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/patinho-corte-scalope-kg-132441
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/patinho-corte-strogonoff-kg-132442
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/patinho-em-bife-kg-132443
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/patinho-extra-limpo-kg-132444
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/patinho-moido-kg-132445
@@ -210,16 +180,11 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/peito-bovino-moi
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/peito-bovino-moido-light-kg-132455
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/peito-bovino-pacote-fechado-a-vacuo-pedido-min-peca-fechada-com-apr-4600kg-valor-por-kg-132453
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/peito-bovino-pecapedaco-kg-132456
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-b-bife-kg-132485
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-b-da-casa-bandeja-kg-132484
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-b-friboi-bordon-fatiada-pct-vacuo-kg-131283
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-b-friboi-bordon-pctfechado-a-vacuo-com-espelho-pedido-minimo-peca-2-kg-valor-por-kg-131237
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-b-grill-posta-pespeto-kg-132486
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-b-nobre-baby-kg-132487
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-maturatta-friboi-pacote-fechado-a-vacuo-resfriada-kg-128042
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-palatare-resfriada-kg-134888
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/picanha-bovina-perdigao-na-brasa-kg-133635
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/rabada-bovina-kg-128291
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/rabo-suino-salgado-kg-135057
 
 # SESSAO: Bazar
@@ -451,7 +416,9 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-imperio-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-imperio-puro-malte-ulight-lneck-275-ml-sem-gluten-125370
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-michelob-ultra-latao-473ml-135849
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-michelob-ultra-long-neck-sem-gluten-330ml-129893
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-original-garrafa-sem-retorno-300ml-125373
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-original-latao-473ml-125375
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-skol-latao-pilsen-473ml-125377
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-sol-premiun-long-neck-330ml-125380
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-sol-premiun-long-neck-zero-alcool-330ml-125381
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cerveja-spaten-puro-malte-latao-473ml-125385
@@ -533,7 +500,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vodka-smirnoff-1
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vodka-smirnoff-600ml-129744
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vodka-smirnoff-998ml-129745
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/whisky-americano-jack-daniel-s-honey-1lt-130718
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/whisky-escoces-ballantines-finest-8-anos-1lt-131155
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/whisky-escoces-buchanans-12-anos-1lt-131156
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/whisky-escoces-buchanans-12-anos-750ml-129754
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/whisky-escoces-cutty-sark-08-anos-1lt-130720
@@ -593,7 +559,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-brasil
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-brasileiro-mioranza-reserva-de-familia-750ml-moscatel-rose-135695
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-brasileiro-mioranza-reserva-de-familia-750ml-prosecco-brut-branco-135696
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-brasileiro-monte-paschoal-750ml-brut-prosecco-134292
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-espanhol-cava-castelfino-750ml-brut-branco-134151
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-espanhol-cava-freixenet-carta-nevada-750ml-demi-sec-126275
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-espanhol-cava-freixenet-cordon-negro-750ml-brut-126278
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/espumante-espanhol-cava-freixenet-rose-750ml-126284
@@ -750,6 +715,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-arge
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-argentino-pacheco-pereda-familia-750ml-cabernet-sauvignon-135282
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-argentino-pacheco-pereda-familia-750ml-malbec-129446
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-argentino-pedro-del-castillo-750ml-malbec-135295
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-argentino-renacer-reserva-punto-final-750ml-family-signature-malbec-135698
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-argentino-reserva-del-camino-blend-750ml-129454
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-argentino-sottano-barrabas-750ml-cabernet-franc-e-malbec-134031
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-argentino-sottano-junior-malbec-750ml-134030
@@ -786,11 +752,9 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-bras
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-brasileiro-pizzato-fausto-375ml-cabernet-sauvignon-131263
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-brasileiro-pizzato-fausto-750ml-merlot-131265
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-brasileiro-pizzato-reserva-abouchet-750ml-131266
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-brasileiro-pizzato-reserva-merlot-750ml-131268
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-brasileiro-pizzato-reserva-tannat-750ml-131269
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-brasileiro-saint-germain-750ml-cabernet-merlot-e-tannat-suave-129505
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-brasileiro-salton-talento-750ml-cabernet-sauvignonmerlot-e-tannat-129508
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-chileno-alturas-de-chile-selection-750ml-cabernet-sauvignon-129513
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-chileno-annie-gran-reserva-750ml-cabernet-sauvignon-18-meses-carvalho-129517
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-chileno-annie-gran-reserva-750ml-carmenere-18-meses-carvalho-129518
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinho-tinto-chileno-annie-gran-reserva-750ml-syrah-12-meses-carvalho-129519
@@ -1048,7 +1012,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cha-verde-leao-p
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cha-verde-leao-pet-450ml-125455
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/energetico-baly-energy-drink-latao-473ml-coco-e-acai-131880
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/energetico-baly-energy-drink-latinha-250ml-coco-com-acai-134222
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/energetico-baly-energy-drink-latinha-250ml-maca-verde-134223
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/energetico-baly-energy-drink-latinha-250ml-melancia-134224
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/energetico-baly-energy-drink-latinha-250ml-tradicional-134226
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/energetico-baly-energy-drink-pet-2lt-acai-e-coco-131176
@@ -1216,6 +1179,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pep
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pepsi-caculinha-zero-200ml-128422
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pepsi-lata-tradicional-350ml-128423
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pepsi-lata-zero-black-350ml-128424
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pepsi-pet-1500ml-tradicional-128425
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pepsi-pet-tradicional-2lt-128426
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pepsi-pet-zero-2lt-128427
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/refrigerante-pepsi-twist-pet-2lt-128428
@@ -1253,7 +1217,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-de-uva-tint
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-de-uva-tinto-garibaldi-da-casa-organico-1lt-integral-e-natural-130929
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-de-uva-tinto-garibaldi-integral-natural-grf-1lt-130930
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-de-uva-tinto-garibaldi-integral-natural-grf-300ml-130335
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-de-uva-tinto-pleno-integral-pet-1350ml-132869
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-del-valle-lata-menos-acucar-290ml-manga-128953
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-del-valle-lata-tradicional-290ml-goiaba-128954
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-del-valle-lata-tradicional-290ml-pessego-128955
@@ -1292,7 +1255,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-imbiara-con
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-imbiara-concentrado-uva-980ml-128986
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-natural-one-garrafinha-uva-300ml-132854
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-natural-one-misto-garrafa-refrigerado-900ml-manga-e-tudo-132859
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-natural-one-misto-garrafa-refrigerado-900ml-pink-lemonade-132860
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-natural-one-misto-garrafa-uva-e-maca-900ml-132861
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-prat-s-caju-gfa-refrigerado-900ml-135099
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/suco-prat-s-goiaba-e-maca-gfa-refrigerado-900ml-135100
@@ -1590,6 +1552,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bebida-lactea-ch
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bebida-lactea-elege-com-polpa-de-fruta-bandeja-510g-morango-130272
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bebida-lactea-fermentada-batavo-pense-zero-garrafa-1150g-morango-134894
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bebida-lactea-fermentada-larisol-1250g-morango-124653
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bebida-lactea-fermentada-larisol-1250g-vitamina-de-frutas-124654
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bebida-lactea-itambe-morango-bandeja-6-x-90gr-540g-129838
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/blanquet-de-peru-sadia-light-grande-para-fatiar-kg-124942
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capeletti-massa-leve-400g-carne-125147
@@ -1597,10 +1560,10 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capeletti-massa-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capeletti-massa-leve-400g-queijo-129875
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capeletti-mezzani-400g-4-queijos-129876
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capeletti-mezzani-400g-carne-129877
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capeletti-mezzani-400g-frango-129878
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/carpaccio-bovino-cenntaby-300g-125250
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/chandelle-flan-nestle-c2-200g-baunilha-134251
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coalhada-coalhada-s-light-150g-125637
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coalhada-larisol-pote-130g-desnatada-125640
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coalhada-larisol-pote-130g-tradicional-125641
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cogumelo-fatiado-kg-125656
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cogumelo-inteiro-kg-125657
@@ -1612,7 +1575,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/fagottini-massa-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/fagottini-massa-leve-350g-tres-queijos-129978
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-activia-polpa-bandeja-c4-danone-340g-ameixa-132034
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-activia-polpa-bandeja-c4-danone-340g-morango-132036
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-batavo-grego-100g-morango-130023
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-batavo-grego-100g-tradicional-126759
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-batavo-grego-pense-zero-pote-100g-maracuja-130989
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-batavo-grego-pense-zero-pote-100g-tradicional-133577
@@ -1652,7 +1614,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-itambe-n
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-itambe-pote-natural-milk-pote-450g-tradicional-130824
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-itambe-pote-pedacos-450g-coco-126781
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-itambe-pote-pedacos-450g-morango-126782
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-itambe-pote-zero-450g-pedacos-frutas-amarelas-165936
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-itambe-pote-zero-450g-pedacos-morango-133698
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-jamila-desnatado-sem-lactose-900g-ameixa-126783
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-jamila-desnatado-sem-lactose-900g-coco-126784
@@ -1672,6 +1633,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-itambe-garrafa-morango-1150g-126795
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-itambe-garrafa-zero-ameixa-1150g-133702
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-itambe-garrafa-zero-batido-1150g-133704
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-itambe-garrafa-zero-mamao-1150g-135618
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-itambe-garrafa-zero-morango-1150g-133830
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-nestle-fonte-de-vitamina-aed-grf-1150g-morango-126801
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-liquido-nestle-fonte-de-vitamina-aed-grf-1150g-vitamina-130540
@@ -1683,9 +1645,10 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-natural-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-natural-danone-160g-laranja-cenoura-e-mel-126807
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-natural-danone-160g-tradicional-126808
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-chamyto-go-100g-morango-126812
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-grego-bandeja-c-04-360g-tradicional-126815
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-grego-pote-90g-calda-de-morango-126817
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-grego-pote-90g-raspa-de-limao-133831
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-grego-pote-90g-tradicional-130825
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-molico-bandeja-c4-360g-134427
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-natural-desnatado-bandeja-c4-320g-134424
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-triplo-zero-garrafa-1150g-batido-135635
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-nestle-triplo-zero-garrafa-1150g-morango-135636
@@ -1695,7 +1658,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-parmalat
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-parmalat-fit-10g-proteina-copo-120g-natural-133620
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-splat-natural-copo-170g-desnatado-130828
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-splat-natural-copo-170g-integral-126828
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-splat-natural-garrafa-900g-desnatado-130545
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-splat-sabores-garrafa-900g-ameixa-130051
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-splat-sabores-garrafa-900g-coco-130052
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/iogurte-splat-sabores-garrafa-900g-morango-130053
@@ -1725,7 +1687,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-perdiga
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-sadia-guanabara-fina-500g-130096
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-sadia-mista-fininha-cozida-e-defumada-215g-127148
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-sadia-suina-churrasco-pct-700g-134749
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-sadia-toscana-pct-700g-131051
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-seara-suina-churrasco-pct-600g-134817
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-seara-toscana-pct-600g-135046
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/linguica-suina-petisco-de-minas-semidefumada-400g-127151
@@ -1742,7 +1703,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-para-paste
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-para-pastel-grossoni-quadrada-400g-130124
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-para-pastel-mezzani-cumbuca-200g-130125
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-para-pastel-mezzani-disquinho-400g-130126
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mix-de-salsichas-e-linguicas-berna-aperitivo-275g-130140
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mortadela-perdigao-bolognella-kg-127648
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mortadela-perdigao-ouro-defumada-kg-127649
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mortadela-sadia-defumada-em-fatias-soltissimo-200g-127650
@@ -1758,7 +1718,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pasta-de-soja-ga
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pasta-de-soja-gaiatri-150g-salsa-e-cebolinha-127964
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pasta-de-soja-gaiatri-150g-tomate-seco-127965
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pasteis-aperitivos-mezzani-250g-queijo-131019
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pastrami-berna-fatiado-100g-130188
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pate-alemao-da-serra-figado-de-aves-mini-geflugelleberwurst-kg-133806
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pate-berna-carne-de-pato-e-frango-100g-130189
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pate-coisas-da-fazenda-figado-de-frango-130g-cerveja-130191
@@ -1799,7 +1758,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salame-sadia-tip
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsicha-berna-branca-weisswurst-300g-130306
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsicha-berna-frankfurter-300g-130307
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsicha-berna-viena-aperitivo-300g-130308
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsicha-perdigao-hot-dog-500g-130309
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsicha-sadia-de-frango-500g-130310
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsicha-sadia-hot-dog-500g-130662
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsicha-seara-hot-dog-kg-134687
@@ -1808,9 +1766,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsichao-berna-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsichao-berna-swiss-sem-nitrito-325g-135390
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/sobremesa-batavo-flan-bandeja-c-2-x-100gr-200g-frutas-vermelhas-inativo-130330
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/sobremesa-chandelle-chantilly-copo-90g-chocolate-134425
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/sobremesa-itambe-brigadeirao-180g-brigadeirao-135622
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/sobremesa-itambe-flan-200g-caramelo-130670
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/sobremesa-itambe-flan-200g-frutas-vermelhas-135623
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/talharim-carneiro-caseiro-500g-fino-129039
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/talharim-carneiro-caseiro-500g-medio-129040
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/talharim-carneiro-caseiro-500g-semola-129041
@@ -2125,18 +2081,23 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/abacate-kg-12399
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/abacaxi-123997
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/abobora-baiana-kg-123998
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/abobora-japonesa-kg-124000
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/abobora-sergipana-kg-124001
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/abobrinha-picados-imperial-400g-135358
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/abobrinha-tipo-italiana-kg-124002
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/agriao-hidroponico-131151
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/agriao-higienizado-follhagens-pinheiral-124087
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/aipim-kg-124160
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/aipo-129797
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/aipo-higienizado-follhagens-pinheiral-250g-124161
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alecrim-124184
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alface-americana-124186
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alface-americana-bola-folhagens-pinheiral-embalada-250g-130725
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alface-americana-higienizado-folhagens-pinheiral-133336
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alface-crespa-hidroponica-124188
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alface-lisa-hidroponica-131172
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alho-granel-kg-124194
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alho-inteiro-descascado-easy-chef-congelado-1100g-124196
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/alho-poro-124199
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/ameixa-importada-kg-134711
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/ameixa-seca-com-caroco-110132-kg-124261
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/ameixa-seca-sem-caroco-110132-kg-124262
@@ -2149,19 +2110,21 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/batata-baroa-kg-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/batata-doce-branca-kg-124564
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/batata-doce-kg-124565
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/batata-hbt-tipo-miuda-kg-124566
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/batata-tipo-inglesa-escovada-kg-124614
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/batata-tipo-inglesa-lavada-kg-124615
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/batata-yacon-kg-124616
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/berinjela-kg-124695
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/beterraba-kg-124697
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/blueberries-125g-124944
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/brocolis-c-couve-flor-folhagens-do-pinheiral-300g-125023
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/brocolis-tipo-americano-125026
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/broto-de-alfafa-manga-larga-150g-130288
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/broto-de-trevo-manga-larga-150g-125027
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/broto-misto-manga-larga-150g-alfafa-e-trevo-125028
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/castanha-de-caju-caramelizada-com-gergelim-kg-125257
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/castanha-de-caju-torrada-e-salgada-quebrada-kg-125261
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/castanha-de-caju-torrada-e-salgada-slw1-kg-125262
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/castanha-do-para-sem-casca-media-inteira-kg-125263
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cebola-kg-125268
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cebola-picles-kg-125269
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cebola-roxa-kg-125270
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cenoura-baby-pct-125276
@@ -2172,6 +2135,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coco-seco-kg-125
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coco-verde-125653
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/coentro-125654
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/couve-flor-125746
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/couve-manteiga-folhagem-do-pinheiral-filetada-180g-129929
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/couve-mineira-125747
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/couve-picada-picados-imperial-160g-131800
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/damasco-turco-n-02-kg-125891
@@ -2203,6 +2167,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maca-super-k-850
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maca-turma-da-monica-pacote-1kg-127190
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mamao-formosa-kg-127259
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mamao-papayahavai-un-133961
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/manga-palmer-kg-127264
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/manga-tommy-kg-127265
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/manjericao-127266
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maracuja-kg-127299
@@ -2243,6 +2208,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/repolho-branco-p
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/repolho-roxo-kg-128459
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/repolho-verde-kg-128460
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/rucula-hidroponica-128530
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salada-mista-higienizada-folhagens-pinheiral-180g-128704
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/salsa-128737
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/seleta-picados-imperial-350g-132757
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/sopao-picados-imperial-500g-132772
@@ -2250,6 +2216,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tamara-com-caroc
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tamara-sem-caroco-kg-130351
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tangerina-morgote-kg-129046
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tangerina-pokan-kg-133541
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tomate-carmem-kg-129127
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tomate-como-antigamente-tipo-italiano-600g-129128
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tomate-tipo-italiano-kg-129133
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tomate-uva-grape-misto-250g-130938
@@ -2708,7 +2675,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/semorin-tira-fer
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/semorin-tira-manchas-100ml-128785
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/soda-caustica-bradoc-300g-128855
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tira-ferrugem-azulim-50ml-129104
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tira-mancha-vanish-gel-multiuso-refil-sache-1200ml-white-129106
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tira-manchas-bio-brilho-barra-100g-129107
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tira-manchas-multi-uso-vanish-poder-o2-pote-450g-tradicional-129109
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tira-manchas-multi-uso-vanish-poder-o2-pote-450g-white-129110
@@ -3002,8 +2968,12 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-jasmine
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-kodilar-recheado-cacau-black-sem-gluten-90g-baunilha-134942
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-kodilar-recheado-cacau-black-sem-gluten-90g-morango-165935
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-linea-waffer-sem-adicao-de-acucar-90g-merengue-de-morango-133370
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-lowcucar-recheado-zero-120g-chocolate-129845
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-lowcucar-recheado-zero-120g-limao-134943
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-lowcucar-recheado-zero-120g-morango-124789
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-lowcucar-waffer-zero-115g-chocolate-124790
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-lowcucar-waffer-zero-115g-limao-124791
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-lowcucar-waffer-zero-115g-morango-124792
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-maizena-natural-life-sgluten-vegano-112g-129846
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-marilan-pit-stop-recheado-91g-peito-de-peru-124799
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/biscoito-marilan-teens-recheado-30g-chocolate-130277
@@ -3144,7 +3114,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-ferrero-r
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-ferrero-rocher-t12-150g-125001
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-ferrero-rocher-t8-100g-125002
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-ferrero-rochert4-125003
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-garoto-sortidos-220g-134913
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-lacta-favoritos-131g-165945
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-lacta-favoritos-2506-gramas-125005
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bombom-lacta-oreo-20g-134494
@@ -3253,7 +3222,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-achoc
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-achocolatado-nescau-dolce-gusto-com-10un-125165
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-cafe-3-coracoes-cappuccino-havanna-c-10un-125167
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-cafe-3-coracoes-compativel-nespresso-c-10un-cerrado-mineiro-125176
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-cafe-3-coracoes-compativel-nespresso-c-10un-colombia-125177
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-cafe-3-coracoes-compativel-nespresso-c-10un-descafeinado-125178
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-cafe-3-coracoes-compativel-nespresso-c-10un-espirito-santo-135230
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/capsula-de-cafe-3-coracoes-compativel-nespresso-c-10un-intenso-125179
@@ -3561,6 +3529,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doce-de-leite-pi
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doce-de-leite-portao-de-cambui-pacote-25g-tradicional-133957
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doce-de-leite-portao-de-cambui-pacote-zero-acucar-23g-133958
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doce-de-leite-vicosa-400g-com-cacau-129956
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doce-de-leite-vicosa-400g-tradicional-129957
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doritos-elma-chips-110g-flamin-hot-135258
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doritos-elma-chips-110g-pimenta-mexicana-135268
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/doritos-elma-chips-120g-nacho-126040
@@ -3623,6 +3592,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/framboesa-franui
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/framboesa-franui-coberta-com-chocolate-150g-pink-chocolate-branco-126503
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/framboesa-franui-coberta-com-chocolate-150g-sem-acucar-135326
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/framboesa-franui-coberta-com-chocolate-90g-leche-branco-e-ao-leite-135360
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/gelatina-em-lowcucar-zero-acucares-10g-cereja-126526
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/gelatina-em-lowcucar-zero-acucares-10g-framboesa-126527
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/gelatina-em-po-dr-oetker-fini-20g-banana-126528
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/gelatina-em-po-dr-oetker-fini-20g-beijos-126529
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/gelatina-em-po-dr-oetker-fini-20g-dentaduras-126530
@@ -3782,6 +3753,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-moli
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-ninho-adulto-semidesnatado-lata-350g-126983
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-ninho-forti-zero-lactose-380g-126985
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-ninho-lata-380g-integral-126986
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-ninho-sache-350g-integral-126987
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-ninho-sache-350g-integral-instantaneo-134729
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-piracanjuba-desnatado-instantaneo-lata-300g-126989
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-piracanjuba-instantaneo-desnatado-sach-400g-126990
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/leite-em-po-piracanjuba-instantaneo-integral-sache-400g-126991
@@ -3810,7 +3783,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bol
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bolo-fleischmann-chocolate-390g-127543
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bolo-fleischmann-chocomousse-400g-127544
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bolo-fleischmann-tipo-petit-gateau-350g-127545
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bolo-fleischmann-torta-de-limao-390g-127546
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bolo-renata-400g-abacaxi-127548
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bolo-renata-400g-baunilha-127550
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mistura-para-bolo-renata-400g-cenoura-130137
@@ -4159,7 +4131,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/macarrao-orienta
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maionese-arisco-pet-tradicional-500g-127238
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maionese-heinz-57-varieties-squeeze-390g-127240
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maionese-heinz-saborizada-215g-verde-127241
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maionese-hellmann-s-churrasco-squeeze-335g-127248
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maionese-hellmann-s-squeeze-bacon-335g-134569
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maionese-hellmann-s-supreme-squeeze-230g-134486
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/maionese-hellmann-s-supreme-squeeze-330g-127252
@@ -4267,7 +4238,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com-ovos-espaguetinho-9-500g-127429
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com-ovos-fetuccine-500g-127430
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com-ovos-fidelinho-10-500g-127431
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com-ovos-gravata-500g-127432
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com-ovos-linguine-500g-127434
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com-ovos-ninho-2-500g-127435
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-renata-com-ovos-ninho-3-500g-127436
@@ -4300,6 +4270,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-santa-amal
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-santa-amalia-com-ovos-fetuccine-500g-127462
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-santa-amalia-com-ovos-fidelinho-n-10-500g-127463
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-santa-amalia-com-ovos-gravata-500g-127464
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-santa-amalia-com-ovos-linguine-500g-127465
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-santa-amalia-com-ovos-parafuso-500g-127469
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/massa-santa-amalia-com-ovos-rigattone-500g-130130
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/milho-verde-predilecta-em-conserva-lata-170g-132241
@@ -4309,11 +4280,9 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mix-de-pimentas-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mix-de-pimentas-tempemar-com-moedor-45g-133765
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mix-para-drinks-aroma-de-verao-tempemar-13g-127569
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/mix-para-drinks-gin-tonica-tempemar-14g-127570
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-barbecue-heinz-260g-127578
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-barbecue-hellmann-s-supreme-280g-165954
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-barbecue-hellmann-s-supreme-380g-165943
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-barbecue-hemmer-330g-130141
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-barbecue-predilecta-sache-240g-127580
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-barbecue-quero-pet-210g-130573
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-bob-s-cepera-200g-burguer-salad-134321
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-de-alho-fenicio-150ml-127581
@@ -4359,6 +4328,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-de-tomate-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-de-tomate-pomarola-receitas-pouch-bolonhesa-300g-127620
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-de-tomate-pomarola-tradicional-peneirado-tp-260g-127622
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-de-tomate-pomarola-tradicional-sache-300g-127623
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-de-tomate-predilecta-refogado-tradic-sache-300g-132270
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-de-tomate-quero-tradicional-sache-240g-133715
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-elege-cebola-caramelizada-200g-133662
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/molho-garytos-pote-260g-cheddar-133328
@@ -4417,6 +4387,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-imperado
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-jureia-pupunha-picado-vidro-300g-127782
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-jureia-pupunha-rodelas-vidro-300g-127783
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-jureia-pupunha-tolete-vidro-300g-127784
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-soberano-de-acai-aperitivo-300g-127785
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-soberano-de-acai-inteiro-vidro-300g-127786
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-tio-paco-pupunha-inteiro-300g-127788
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/palmito-tio-paco-pupunha-picado-300g-127789
@@ -4563,6 +4534,7 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/vinagre-italiano
 # SESSAO: Mercearia Seca - Açúcar, Arroz, Feijão
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/acucar-da-barra-natural-demerara-1kg-124052
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/acucar-de-coco-qualicoco-pouch-100g-124053
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/acucar-magro-light-400g-124054
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/acucar-mascavo-gaiatri-500g-124055
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/acucar-refinado-guarani-1kg-129783
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/acucar-refinado-neve-1kg-131339
@@ -4600,7 +4572,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-integral-g
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-integral-granfino-t1-1kg-124336
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-integral-princesa-lf-t-1-1kg-133975
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-integral-tio-joao-saquinho-1kg-boiling-bag-t1-124340
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-integral-tio-joao-t1-500g-124342
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-integral-urbano-7-graos-t1-1kg-zero-gluten-129815
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-parboilizado-granfino-1kg-124348
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/arroz-parboilizado-tio-joao-t1-1kg-124350
@@ -4668,6 +4639,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/farofa-pronta-de
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/farofa-pronta-yoki-temperada-caseirissima-200g-costelinha-126381
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/feijao-branco-combrasil-t1-500g-126383
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/feijao-branco-granfino-t1-500g-126384
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/feijao-branco-urbano-tipo-1-500g-126385
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/feijao-carioca-maximo-tipo-1-1kg-130999
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/feijao-carioquinha-granfino-t2-500g-126389
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/feijao-fradinho-granfino-t3-500g-126392
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/feijao-manteiga-combrasil-t1-500g-126393
@@ -4817,8 +4790,8 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-grani-amici-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-helga-s-brot-de-forma-com-aveia-e-linhaca-250g-127867
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-helga-s-brot-de-forma-com-nozes-e-passas-250g-134186
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-helga-s-brot-de-forma-integral-250g-127869
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-jasmine-fatiado-sem-glutem-350g-batata-doce-135212
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-kodilar-vegano-sem-glutem-220g-multigraos-132429
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-kodilar-vegano-sem-glutem-220g-tradicional-131142
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-paderri-hamburguer-brioche-375g-134430
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-panco-de-forma-artesanale-350g-35-integral-127878
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-panco-de-forma-artesanale-350g-alecrim-e-azeite-127879
@@ -4889,8 +4862,20 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tortillas-de-tri
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/tortillas-de-trigo-sequoia-tradicional-480g-tradicional-129174
 
 # SESSAO: Padaria - Produção da Casa
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/baguete-francesa-kg-130210
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/baguete-italiana-com-alecrim-kg-130211
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bolo-chocolate-cobertura-chocolate-red-lisa-kg-124956
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bolo-chocolate-cobertura-chocolate-retangular-kg-130283
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bolo-de-fuba-com-erva-doce-lisa-mmx-kg-134356
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bolo-de-limao-red-lisa-kg-124959
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bolo-de-limao-retangular-kg-124960
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bolo-formigueiro-red-lisa-kg-124962
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/brioche-de-frango-mmx-125014
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/brioche-de-queijo-e-presunto-mmx-125015
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/brioche-de-queijo-minas-c-peito-de-peru-mmx-125016
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/broa-airosa-de-fuba-kg-125018
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/broinha-temperada-kg-125022
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/cachorro-quente-de-forno-mmx-125037
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/croissant-quatro-queijos-mmx-125875
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/danese-chocolate-kg-125892
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/danese-passas-kg-125893
@@ -4907,11 +4892,15 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-cearense-kg-
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-de-batata-kg-127825
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-de-forma-petropolis-kg-127833
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-de-milho-kg-127839
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-doce-com-creme-e-coco-ralado-kg-133390
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-fermentacao-natural-4-queijos-kg-130587
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-fermentacao-natural-tradicional-kg-127862
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-frances-integral-kg-130591
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-frances-kg-130592
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-hamburguer-com-gergelim-kg-127865
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-hamburguer-kg-127866
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-hot-dog-multimix-kg-130176
+https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/pao-italiano-kg-127870
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/queijadinha-kg-128152
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/rosquinha-dourada-kg-128527
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/torrada-canape-kg-132925
@@ -4919,7 +4908,6 @@ https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/torrada-de-orega
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/torrada-parmesao-kg-132929
 
 # SESSAO: Peixes
-https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/bacalhau-morhua-desfiado-riberalves-dessalcongel-400g-flor-de-sal-124459
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/camarao-argentino-frescatto-cru-cong-2130-400g-135474
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/camarao-cinza-buona-pesca-scabeca-cozido-5090-200g-133994
 https://www.emporiomultimix.com.br/comestiveis-matriz/produto/m/camarao-cinza-frescatto-int-pre-coz-cong-5060-400g-tradicional-inteiro-125128
