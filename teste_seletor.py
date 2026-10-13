@@ -1,3 +1,21 @@
+### Análise do Robô de Testes
+
+Atualmente, o robô está configurado para rodar de forma **automática (em segundo plano)** por causa do parâmetro `headless=True` na linha onde o navegador é lançado.
+
+Para mudá-lo para o **modo manual (com interface visual visível)**, alteramos o parâmetro para `headless=False`.
+
+---
+
+### Linha Alterada
+
+* **Linha antiga:** `browser = await p.chromium.launch(headless=True)`
+* **Linha nova (Modo Manual):** `browser = await p.chromium.launch(headless=False)`
+
+---
+
+### Código Atualizado
+
+```python
 import os
 import re
 import asyncio
@@ -83,7 +101,8 @@ async def main():
     print(f"🧪 Testando {len(links)} links...")
     
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        # Alterado de headless=True para headless=False (Modo Manual/Visual)
+        browser = await p.chromium.launch(headless=False)
         resultados = []
         
         for url in links:
@@ -104,3 +123,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+```
