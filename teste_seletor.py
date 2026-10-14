@@ -1,21 +1,3 @@
-### Análise do Robô de Testes
-
-Atualmente, o robô está configurado para rodar de forma **automática (em segundo plano)** por causa do parâmetro `headless=True` na linha onde o navegador é lançado.
-
-Para mudá-lo para o **modo manual (com interface visual visível)**, alteramos o parâmetro para `headless=False`.
-
----
-
-### Linha Alterada
-
-* **Linha antiga:** `browser = await p.chromium.launch(headless=True)`
-* **Linha nova (Modo Manual):** `browser = await p.chromium.launch(headless=False)`
-
----
-
-### Código Atualizado
-
-```python
 import os
 import re
 import asyncio
@@ -68,6 +50,11 @@ async def testar_link(browser, url):
     try:
         await page.goto(url, wait_until="load")
         
+        # 🔍 Validação para detectar páginas em branco / IDs desatualizados (ex: mudança de 617 para 879)
+        conteudo_texto = await page.inner_text("body")
+        if "Nenhum resultado encontrado" in conteudo_texto:
+            raise Exception("URL desatualizada - Página exibiu 'Nenhum resultado encontrado'")
+        
         # Seletor direto e sem rodeios
         elemento = page.locator("span:has-text('R$')").first
         await elemento.wait_for(state="visible", timeout=5000)
@@ -79,7 +66,7 @@ async def testar_link(browser, url):
             apenas_numeros = apenas_numeros.replace('.', '').replace(',', '.')
         valor_numerico = float(apenas_numeros)
     except Exception as e:
-        print(f"⚠️ Não capturou preço para {nome_produto}: {e}")
+        print(f"⚠️ Não capturou preço para {nome_produto} ({url}): {e}")
     finally:
         await page.close()
         await context.close()
@@ -101,13 +88,12 @@ async def main():
     print(f"🧪 Testando {len(links)} links...")
     
     async with async_playwright() as p:
-        # Alterado de headless=True para headless=False (Modo Manual/Visual)
+        # Alterado para headless=False para visualização manual se necessário
         browser = await p.chromium.launch(headless=False)
         resultados = []
         
         for url in links:
             dados_produto = await testar_link(browser, url)
-            # Salvamos mesmo se o valor for 0.0 para você saber qual link falhou!
             resultados.append(dados_produto)
                 
         await browser.close()
@@ -115,7 +101,6 @@ async def main():
         # Grava tudo de uma vez no Supabase
         if resultados:
             try:
-                # Usando chamada síncrona simples para evitar conflitos de biblioteca
                 supabase.table("teste_seletores_log").insert(resultados).execute()
                 print(f"💾 {len(resultados)} registros gravados com sucesso no banco!")
             except Exception as e:
@@ -123,5 +108,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
 ```
