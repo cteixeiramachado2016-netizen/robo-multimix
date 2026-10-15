@@ -2,7 +2,7 @@ import os
 import asyncio
 from playwright.async_api import async_playwright
 
-ARQUIVO_TESTE = "links_multimix_teste.txt"
+ARQUIVO_SAIDA = "links_01_multimix_centro.txt"
 BASE_URL = "https://www.emporiomultimix.com.br"
 URL_MATRIZ = "https://www.emporiomultimix.com.br/comestiveis-matriz"
 
@@ -89,10 +89,10 @@ async def main():
             links_gerados = await extrair_e_mapear_categorias(page)
             
             if links_gerados:
-                with open(ARQUIVO_TESTE, "w", encoding="utf-8") as f:
+                with open(ARQUIVO_SAIDA, "w", encoding="utf-8") as f:
                     for link in links_gerados:
                         f.write(f"{link}\n")
-                print(f"\n💾 Sucesso! {len(links_gerados)} links salvos em '{ARQUIVO_TESTE}'.")
+                print(f"\n💾 Sucesso! {len(links_gerados)} links salvos em '{ARQUIVO_SAIDA}'.")
             else:
                 print("\n❌ Nenhum link foi gerado.")
                 
