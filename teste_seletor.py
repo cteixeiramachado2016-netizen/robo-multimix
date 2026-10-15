@@ -19,19 +19,29 @@ async def extrair_e_mapear_categorias(page):
     )
     
     categorias_unicas = set()
+    
+    # Palavras-chave institucionais, de produtos avulsos ou utilidades que queremos ignorar
+    ignorados = [
+        "/produto/", "/checkout/", "/conta/", 
+        "fale-conosco", "nossas-lojas", "trabalhe-conosco", 
+        "regioes-e-horarios-atendimento", "categorias"
+    ]
+
     for link in links_brutos:
         link_limpo = link.split('?')[0]
         
-        # FILTRO INTELIGENTE: Pula se for produto individual, checkout ou a home
-        if "/produto/" in link_limpo or "/checkout/" in link_limpo:
-            continue
+        # Pula se for a home ou links vazios
         if link_limpo == URL_MATRIZ or link_limpo == URL_MATRIZ + "/":
+            continue
+            
+        # Pula se contiver qualquer termo institucional ou de produto
+        if any(termo in link_limpo for termo in ignorados):
             continue
             
         if "comestiveis-matriz/" in link_limpo:
             categorias_unicas.add(link_limpo)
             
-    print(f"🔍 Encontradas {len(categorias_unicas)} categorias reais (sem produtos avulsos).")
+    print(f"🔍 Encontradas {len(categorias_unicas)} categorias reais (sem produtos ou páginas institucionais).")
     
     links_finais_com_paginacao = []
 
