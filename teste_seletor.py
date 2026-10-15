@@ -10,23 +10,28 @@ async def extrair_e_mapear_categorias(page):
     print(f"🌐 Acessando a página matriz: {URL_MATRIZ}")
     await page.goto(URL_MATRIZ, wait_until="load")
     
-    # Aguarda os elementos de categorias carregarem na tela
+    # Aguarda os elementos de navegação carregarem
     await page.wait_for_selector("a[href*='comestiveis-matriz/']", timeout=10000)
     
-    # Extrai todos los links únicos de categorias da página principal
     links_brutos = await page.eval_on_selector_all(
         "a[href*='comestiveis-matriz/']",
         "elements => elements.map(e => e.href)"
     )
     
-    # Filtra apenas os links de categorias
     categorias_unicas = set()
     for link in links_brutos:
         link_limpo = link.split('?')[0]
-        if link_limpo != URL_MATRIZ and "comestiveis-matriz/" in link_limpo:
+        
+        # FILTRO INTELIGENTE: Pula se for produto individual, checkout ou a home
+        if "/produto/" in link_limpo or "/checkout/" in link_limpo:
+            continue
+        if link_limpo == URL_MATRIZ or link_limpo == URL_MATRIZ + "/":
+            continue
+            
+        if "comestiveis-matriz/" in link_limpo:
             categorias_unicas.add(link_limpo)
             
-    print(f"🔍 Encontradas {len(categorias_unicas)} categorias base.")
+    print(f"🔍 Encontradas {len(categorias_unicas)} categorias reais (sem produtos avulsos).")
     
     links_finais_com_paginacao = []
 
@@ -89,4 +94,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
