@@ -1,13 +1,17 @@
-name: Testador de Seletores
+name: Testador de Seletores e Explorador
 
 on:
-  workflow_dispatch: # Permite que você ative o teste manualmente com um clique no painel do GitHub
+  workflow_dispatch: # Permite disparar manualmente pelo painel do GitHub
   schedule:
-    - cron: '0 8 * * 1' # Opcional: Roda automaticamente toda segunda-feira às 05:00h (horário de Brasília)
+    - cron: '0 8 * * 1' # Roda automaticamente toda segunda-feira
 
 jobs:
   rodar-testes:
     runs-on: ubuntu-latest
+    
+    # Dá permissão para o GitHub Actions escrever/atualizar arquivos no repositório
+    permissions:
+      contents: write
 
     steps:
       - name: Baixar Código do Repositório
@@ -17,9 +21,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          # Removido o cache automático do pip para evitar o erro de falta de requirements.txt
 
       - name: Instalar Dependências do Robô
+        uses: pip install --upgrade pip
         run: |
           pip install --upgrade pip
           pip install playwright supabase python-dotenv pytz
@@ -30,5 +34,13 @@ jobs:
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> credenciais_supabase.env
           echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> credenciais_supabase.env
 
-      - name: Executar Script de Testes
+      - name: Executar Script Explorador de Links
         run: python teste_seletor.py
+
+      - name: Salvar links atualizados no Repositório
+        run: |
+          git config --global user.name "Robo Explorador"
+          git config --global user.email "robo@github.com"
+          git add links_multimix_teste.txt
+          git diff --quiet && git diff --staged --quiet || git commit -m "🤖 Atualização automática dos links de teste"
+          git push
