@@ -1,1 +1,38 @@
+name: 01 - Atualizar Links Multimix Centro
 
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  rodar-testes:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+      - name: Baixar Código do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Ambiente Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar Dependências do Robô
+        run: |
+          pip install --upgrade pip
+          pip install playwright python-dotenv pytz
+          playwright install chromium
+
+      - name: Executar Script Explorador de Links
+        run: python 01_explorador_multimix_centro.py
+
+      - name: Salvar links atualizados no Repositório
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add links_01_multimix_centro.txt
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 [Etapa 01] Atualização automática de links_01_multimix_centro.txt" && git push)
