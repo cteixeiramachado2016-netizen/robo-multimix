@@ -1,111 +1,100 @@
 import os
-import re
 import asyncio
-from datetime import datetime, timezone
-from dotenv import load_dotenv
 from playwright.async_api import async_playwright
-from supabase import create_client, Client
-
-# Carrega credenciais do arquivo temporário do GitHub Actions
-load_dotenv("credenciais_supabase.env")
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 ARQUIVO_TESTE = "links_multimix_teste.txt"
 BASE_URL = "https://www.emporiomultimix.com.br"
+URL_MATRIZ = "https://www.emporiomultimix.com.br/comestiveis-matriz"
 
-def extrair_nome_pelo_link(url):
-    try:
-        nome_limpo = url.split('/')[-1].split('?')[0]
-        nome_sem_id = re.sub(r'-\d+$', '', nome_limpo)
-        nome_amigavel = nome_sem_id.replace('-', ' ').title()
-        return nome_amigavel if len(nome_amigavel.strip()) > 0 else "Produto Sem Nome"
-    except:
-        return "Produto Sem Nome"
-
-def ler_links_teste():
-    links = []
-    if not os.path.exists(ARQUIVO_TESTE):
-        return links
-    with open(ARQUIVO_TESTE, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith("#"):
-                url = line if line.startswith("http") else BASE_URL + "/" + line.lstrip("/")
-                links.append(url)
-    return list(set(links))
-
-async def testar_link(browser, url):
-    context = await browser.new_context(
-        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+async def extrair_e_mapear_categorias(page):
+    print(kf"🌐 Acessando a página matriz: {URL_MATRIZ}")
+    await page.goto(URL_MATRIZ, wait_until="load")
+    
+    # Aguarda os elementos de categorias carregarem na tela
+    await page.wait_for_selector("a[href*='comestiveis-matriz/']", timeout=10000)
+    
+    # Extrai todos os links únicos de categorias da página principal
+    links_brutos = await page.eval_on_selector_all(
+        "a[href*='comestiveis-matriz/']",
+        "elements => elements.map(e => e.href)"
     )
-    page = await context.new_page()
-    page.set_default_timeout(15000)
     
-    valor_numerico = 0.0
-    nome_produto = extrair_nome_pelo_link(url)
+    # Filtra apenas os links de categorias (excluindo links repetidos ou da home)
+    categorias_unicas = set()
+    for link in links_brutos:
+        # Limpa parâmetros de paginação antigos se vierem na matriz
+        link_limpo = link.split('?')[0]
+        if link_limpo != URL_MATRIZ and "comestiveis-matriz/" in link_limpo:
+            categorias_unicas.add(link_limpo)
+            
+    print(f"🔍 Encontradas {len(categorias_unicas)} categorias base.")
     
-    try:
-        await page.goto(url, wait_until="load")
+    links_finais_com_paginacao = []
+
+    for cat_url in categorias_unicas:
+        print(f"📂 Verificando paginação para: {cat_url}")
         
-        # 🔍 Validação para detectar páginas em branco / IDs desatualizados (ex: mudança de 617 para 879)
-        conteudo_texto = await page.inner_text("body")
-        if "Nenhum resultado encontrado" in conteudo_texto:
-            raise Exception("URL desatualizada - Página exibiu 'Nenhum resultado encontrado'")
+        # Testa a paginação de 1 até 10 para ver até onde a categoria vai
+        pagina_atual = 1
+        max_paginas = 10 
         
-        # Seletor direto e sem rodeios
-        elemento = page.locator("span:has-text('R$')").first
-        await elemento.wait_for(state="visible", timeout=5000)
-        texto = await elemento.inner_text()
-        
-        # Extrai o número de forma direta
-        apenas_numeros = re.sub(r'[^\d,.]', '', texto)
-        if ',' in apenas_numeros:
-            apenas_numeros = apenas_numeros.replace('.', '').replace(',', '.')
-        valor_numerico = float(apenas_numeros)
-    except Exception as e:
-        print(f"⚠️ Não capturou preço para {nome_produto} ({url}): {e}")
-    finally:
-        await page.close()
-        await context.close()
-        
-    # Retorna o dicionário exatamente como o banco quer
-    return {
-        "produto": nome_produto if nome_produto else "Produto Sem Nome",
-        "valor_numerico": valor_numerico if valor_numerico > 0 else 0.0,
-        "mercado_id": "1",
-        "data_robo": datetime.now(timezone.utc).isoformat()
-    }
+        while pagina_atual <= max_paginas:
+            url_teste = f"{cat_url}?page={pagina_atual}"
+            
+            try:
+                # Abre a página da categoria/pagina
+                response = await page.goto(url_teste, wait_until="load")
+                
+                if response.status == 404:
+                    print(f"   ❌ Página {pagina_atual} retornou 404. Fim da categoria.")
+                    break
+                
+                # Verifica se a página retornou o aviso de vazio/erro
+                conteudo_texto = await page.inner_text("body")
+                if "Nenhum resultado encontrado" in conteudo_texto:
+                    print(f"   ⚠️ Página {pagina_atual} está vazia ('Nenhum resultado encontrado'). Fim da categoria.")
+                    break
+                
+                # Se passou nas validações, a página é válida! Adiciona à lista
+                links_finais_com_paginacao.append(url_teste)
+                print(f"   ✅ Válida: {url_teste}")
+                pagina_atual += 1
+                
+            except Exception as e:
+                print(f"   ❌ Erro ao testar {url_teste}: {e}")
+                break
+
+    return links_finais_com_paginacao
 
 async def main():
-    links = ler_links_teste()
-    if not links:
-        print("❌ Nenhum link para testar.")
-        return
-        
-    print(f"🧪 Testando {len(links)} links...")
-    
     async with async_playwright() as p:
-        # Alterado para headless=False para visualização manual se necessário
+        # Rodando em modo manual/visual para você acompanhar o robô caçando os links
         browser = await p.chromium.launch(headless=False)
-        resultados = []
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        page = await context.new_page()
+        page.set_default_timeout(15000)
         
-        for url in links:
-            dados_produto = await testar_link(browser, url)
-            resultados.append(dados_produto)
+        try:
+            links_gerados = await extrair_e_mapear_categorias(page)
+            
+            if links_gerados:
+                # Salva os links gerados no arquivo de teste
+                with open(ARQUIVO_TESTE, "w", encoding="utf-8") as f:
+                    f.write(f"# Gerado automaticamente em {datetime.now()}\n")
+                    for link in links_gerados:
+                        f.write(f"{link}\n")
+                print(f"\n💾 Sucesso! {len(links_gerados)} links salvos em '{ARQUIVO_TESTE}'.")
+            else:
+                print("\n❌ Nenhum link foi gerado.")
                 
-        await browser.close()
-        
-        # Grava tudo de uma vez no Supabase
-        if resultados:
-            try:
-                supabase.table("teste_seletores_log").insert(resultados).execute()
-                print(f"💾 {len(resultados)} registros gravados com sucesso no banco!")
-            except Exception as e:
-                print(f"❌ Erro de gravação no Supabase: {e}")
+        except Exception as e:
+            print(f"\n❌ Erro geral no robô explorador: {e}")
+            
+        finally:
+            await browser.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
-```
+
