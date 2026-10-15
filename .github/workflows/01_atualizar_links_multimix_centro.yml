@@ -1,9 +1,9 @@
-name: Testador de Seletores e Explorador
+name: 01 - Atualizar Links Multimix Centro
 
 on:
   workflow_dispatch: # Permite disparar manualmente pelo painel do GitHub
   schedule:
-    - cron: '0 8 * * 1' # Roda automaticamente toda segunda-feira
+    - cron: '0 3 * * *' # Roda automaticamente todos os dias às 00:00 (Horário de Brasília / 03:00 UTC)
 
 jobs:
   rodar-testes:
@@ -34,12 +34,12 @@ jobs:
           echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> credenciais_supabase.env
 
       - name: Executar Script Explorador de Links
-        run: python teste_seletor.py
+        run: python 01_explorador_multimix_centro.py
 
       - name: Salvar links atualizados no Repositório
         run: |
           git config --global user.name "Robo Explorador"
           git config --global user.email "robo@github.com"
-          git add links_multimix_teste.txt
-          git diff --quiet && git diff --staged --quiet || git commit -m "🤖 Atualização automática dos links de teste"
+          git add links_01_multimix_centro.txt
+          git diff --quiet && git diff --staged || git commit -m "🤖 [Etapa 01] Atualização automática diária dos links do Multimix Centro"
           git push
