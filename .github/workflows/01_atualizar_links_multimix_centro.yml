@@ -1,13 +1,13 @@
-name: 02 - Explorador de Produtos Multimix Centro
+name: 01 - Atualizar Links Multimix Centro
 
 on:
   schedule:
-    # Roda todo dia à 01:00 da manhã no Horário de Brasília (04:00 UTC), logo após a Etapa 01
-    - cron: '0 4 * * *'
+    # Roda todo dia à meia-noite (00:00) no Horário de Brasília (03:00 UTC)
+    - cron: '0 3 * * *'
   workflow_dispatch: # Permite acionamento manual
 
 jobs:
-  extrair-produtos:
+  rodar-explorador:
     runs-on: ubuntu-latest
     
     permissions:
@@ -20,7 +20,7 @@ jobs:
       - name: Configurar Ambiente Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Instalar Dependências do Robô
         run: |
@@ -28,18 +28,18 @@ jobs:
           pip install playwright python-dotenv pytz
           playwright install chromium
 
-      - name: Executar Script Extrator de Produtos
-        run: python 02_explorador_multimix_centro.py
+      - name: Executar Script Explorador de Links (Etapa 01)
+        run: python 01_explorador_multimix_centro.py
 
-      - name: Salvar links de produtos no Repositório
+      - name: Salvar links atualizados no Repositório
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add 02_links_multimix_centro.txt
+          git add links_01_multimix_centro.txt
           if git diff --staged --quiet; then
-            echo "Nenhuma mudança detectada em 02_links_multimix_centro.txt. Pulando commit."
+            echo "Nenhuma mudança detectada em links_01_multimix_centro.txt. Pulando commit."
           else
-            git commit -m "🤖 [Etapa 02] Atualização de 02_links_multimix_centro.txt"
+            git commit -m "🤖 [Etapa 01] Atualização automática de links_01_multimix_centro.txt"
             git pull --rebase origin main
             git push origin main
           fi
