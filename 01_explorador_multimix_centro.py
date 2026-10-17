@@ -2,7 +2,7 @@ import os
 import asyncio
 from playwright.async_api import async_playwright
 
-ARQUIVO_SAIDA = "links_01_multimix_centro.txt"
+ARQUIVO_SAIDA = "01_links_multimix_centro.txt"
 BASE_URL = "https://www.emporiomultimix.com.br"
 URL_MATRIZ = "https://www.emporiomultimix.com.br/comestiveis-matriz"
 
