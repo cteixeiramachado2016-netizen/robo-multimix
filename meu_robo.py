@@ -18,8 +18,8 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Arquivo de produção com 5000+ links organizados por sessão
-ARQUIVO_PRODUCAO = "links_multimix.txt"
+# Arquivo de produção ajustado para ler exatamente o que a Etapa 02 gera
+ARQUIVO_PRODUCAO = "02_links_multimix_centro.txt"
 BASE_URL = "https://www.emporiomultimix.com.br"
 TAMANHO_LOTE = 100  # Envia ao Supabase em lotes de 100 para proteger a conexão
 
@@ -43,24 +43,17 @@ def extrair_nome_pelo_link(url):
         return "Produto Sem Nome"
 
 def ler_links_com_sessao():
-    """
-    Lê o arquivo de links e retorna uma lista de tuplas contendo:
-    (url_do_produto, sessao_do_produto)
-    Mantendo a ordem original do arquivo.
-    """
     links_mapeados = []
-    sessao_atual = "Geral"  # Categoria padrão caso apareça algum link antes do primeiro cabeçalho
+    sessao_atual = "Geral"
     
-    # Verifica primeiro o arquivo de produção, se não existir usa o de teste
     arquivo = ARQUIVO_PRODUCAO if os.path.exists(ARQUIVO_PRODUCAO) else "links_multimix_teste.txt"
     
     if not os.path.exists(arquivo):
-        print(f"❌ Erro: Arquivo de links não encontrado!")
+        print(f"❌ Erro: Arquivo de links '{arquivo}' não encontrado!")
         return links_mapeados
     
     print(f"📖 Lendo links organizados por sessão de: {arquivo}")
     
-    # Evitar adicionar links duplicados na mesma rodada
     urls_processadas = set()
     
     with open(arquivo, 'r', encoding='utf-8') as f:
@@ -70,18 +63,15 @@ def ler_links_com_sessao():
             if not linha:
                 continue
             
-            # Se for uma linha de sessão, atualiza a sessão corrente e passa para a próxima linha
             if linha.startswith("#"):
                 sessao_atual = linha.replace("#", "").replace("SESSAO:", "").strip()
                 continue
                 
-            # Formata a URL
             if not linha.startswith("http"):
                 url = BASE_URL + linha if linha.startswith("/") else BASE_URL + "/" + linha
             else:
                 url = linha
             
-            # Evita duplicar o mesmo link caso ele apareça em mais de um lugar do arquivo
             if url not in urls_processadas:
                 urls_processadas.add(url)
                 links_mapeados.append((url, sessao_atual))
@@ -116,17 +106,15 @@ async def testar_link(browser, url, sessao, idx, total):
                 preco_detectado = texto_limpo
                 valor_numerico = temp_valor
         except Exception as e:
-            # Silencia erros de seletores comuns em produção para não poluir o log do GitHub
             pass
 
-        # Só gera a estrutura de salvamento se o preço for maior que zero
         if valor_numerico > 0.0:
             resultado_salvar = {
                 "produto": nome_produto,
                 "valor_numerico": valor_numerico,
                 "mercado_id": "1",
-                "sessao": sessao,  # Enviando a sessão estruturada para o banco
-                "link": url,       # Enviando o link completo para o banco
+                "sessao": sessao,
+                "link": url,
                 "data_robo": datetime.now(timezone.utc).isoformat()
             }
             print(f"✅ SUCESSO: '{nome_produto[:30]}' | Preço: {preco_detectado} | Sessão: {sessao}")
@@ -140,23 +128,17 @@ async def testar_link(browser, url, sessao, idx, total):
     return resultado_salvar
 
 def limpar_banco_supabase():
-    """
-    Remove todos os registros da tabela historico_precos antes de inserir os novos dados.
-    Utiliza um filtro que sempre é verdadeiro para limpar tudo com segurança.
-    """
     try:
         print("🧹 Limpando dados antigos da tabela 'historico_precos' no Supabase...")
-        # Deleta todos os registros onde o id é maior que zero (limpa toda a tabela)
         supabase.table("historico_precos").delete().gt("id", 0).execute()
         print("✨ Tabela limpa com sucesso! Pronta para novos dados.")
         return True
     except Exception as e:
-        print(f"⚠️ Aviso/Erro ao limpar tabela (pode ser restrição de políticas RLS ou tabela já vazia): {e}")
+        print(f"⚠️ Aviso/Erro ao limpar tabela: {e}")
         return False
 
 def salvar_no_supabase(dados):
     try:
-        # Enviando para a tabela de produção: historico_precos
         supabase.table("historico_precos").insert(dados).execute()
         print(f"💾 Lote de {len(dados)} registros gravados com sucesso no Supabase!")
         return True
@@ -165,13 +147,11 @@ def salvar_no_supabase(dados):
         return False
 
 async def main():
-    # 1. Carrega os links do arquivo
     links_mapeados = ler_links_com_sessao()
     if not links_mapeados:
         print("⚠️ Nenhum link de teste ou produção encontrado.")
         return
     
-    # 2. 🔑 LIMPA O BANCO ANTES DE COMEÇAR O FLUXO
     limpar_banco_supabase()
         
     total_links = len(links_mapeados)
@@ -184,11 +164,9 @@ async def main():
         for idx, (url, sessao) in enumerate(links_mapeados, start=1):
             res = await testar_link(browser, url, sessao, idx, total_links)
             
-            # FILTRO CRÍTICO: Só adiciona se o produto foi raspado com sucesso (> 0.0)
             if res:
                 resultados_lote.append(res)
             
-            # Envia e esvazia a lista se atingir o tamanho do lote
             if len(resultados_lote) >= TAMANHO_LOTE:
                 print(f"📦 Enviando lote de {TAMANHO_LOTE} produtos válidos ao banco...")
                 salvar_no_supabase(resultados_lote)
@@ -196,5 +174,9 @@ async def main():
                 
         await browser.close()
         
-        # Salva o resto que sobrou no final
         if resultados_lote:
+            print(f"📦 Enviando lote final restante de {len(resultados_lote)} itens...")
+            salvar_no_supabase(resultados_lote)
+
+if __name__ == "__main__":
+    asyncio.run(main())
