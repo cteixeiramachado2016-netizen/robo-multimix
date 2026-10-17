@@ -198,8 +198,3 @@ async def main():
         
         # Salva o resto que sobrou no final
         if resultados_lote:
-            print(f"📦 Enviando lote final restante de {len(resultados_lote)} itens...")
-            salvar_no_supabase(resultados_lote)
-
-if __name__ == "__main__":
-    asyncio.run(main())
