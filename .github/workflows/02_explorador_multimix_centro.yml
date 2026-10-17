@@ -1,4 +1,4 @@
-name: Pipeline Semanal - Explorador de Links
+name: 02_explorador_multimix_centro.yml
 
 on:
   schedule:
