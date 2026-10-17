@@ -1,82 +1,48 @@
-name: Executar meu_robo.py - Multimix Centro
+name: 03 - meu_robo.py - Multimix Centro
 
 on:
   schedule:
-    # 🕒 Configurado para disparar todo dia às 04:00 da manhã (Horário de Brasília / 07:00 UTC)
+    # Configurado para disparar todo dia às 04:00 da manhã (Horário de Brasília) / 07:00 UTC
     - cron: '0 7 * * *'
-  # Permite clicar no botão para rodar manualmente sempre que quiser
-  workflow_dispatch:
-
-# Garante que o robô tenha permissão para commitar as alterações de volta no repositório
-permissions:
-  contents: write
+  workflow_dispatch: # Permite acionar manualmente a qualquer momento
 
 jobs:
-  executar-robo:
+  extrair-precos:
     runs-on: ubuntu-latest
 
-    # Define as variáveis de ambiente para todo o Job
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }} # 🔥 Garantia de inserção em lotes
+    permissions:
+      contents: write
 
     steps:
-      - name: 1. Baixar código do repositório
+      - name: Baixar Código do Repositório
         uses: actions/checkout@v4
 
-      - name: 2. Configurar o Python
+      - name: Configurar Ambiente Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.11"
 
-      - name: 3. Instalar dependências do Python
+      - name: Instalar Dependências do Robô
         run: |
           python -m pip install --upgrade pip
-          pip install playwright pandas openpyxl requests beautifulsoup4 python-dotenv supabase pytz
-
-      - name: 4. Instalar Navegadores e Dependências do Sistema
-        run: |
+          pip install playwright python-dotenv supabase pytz requests
           playwright install chromium
-          playwright install-deps chromium
 
-      # 🧹 NOVO PASSO: Limpa a tabela de produção antes da carga diária do robô
-      - name: 5. Limpar tabela historico_precos no Supabase
-        run: |
-          python -c "
-          import os
-          from supabase import create_client
-          # Se tiver a SERVICE_KEY, usa ela para garantir permissão total na remoção
-          key = os.getenv('SUPABASE_SERVICE_KEY') or os.getenv('SUPABASE_KEY')
-          url = os.getenv('SUPABASE_URL')
-          
-          if not url or not key:
-              print('❌ Erro: Credenciais do Supabase não encontradas no ambiente!')
-              exit(1)
-              
-          supabase = create_client(url, key)
-          try:
-              # Remove todos os dados da tabela historico_precos para receber a nova raspagem do zero
-              supabase.table('historico_precos').delete().neq('produto', '').execute()
-              print('🧹 Tabela historico_precos limpa com sucesso do GitHub Actions!')
-          except Exception as e:
-              print(f'❌ Erro ao limpar a tabela historico_precos: {e}')
-              exit(1) # Falhar o job aqui impede que novos dados entrem misturados com sujeira antiga
-          "
-
-      - name: 6. Executar Robô de Preços (meu_robo.py)
+      - name: Executar Robô Extrator de Preços (meu_robo.py)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: python meu_robo.py
 
-      - name: 7. Salvar dados atualizados no GitHub (Caso o arquivo de links mude)
+      - name: Salvar logs ou atualizações no Repositório (se houver)
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add links_multimix.txt || true
-          
-          # Verifica se há alterações reais antes de tentar commitar
-          if ! git diff --cached --quiet; then
-            git commit -m "Automação: Atualização diária de preços via meu_robo.py"
-            git push
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --staged --quiet; then
+            echo "Nenhuma mudança detectada nos arquivos locais. Pulando commit."
           else
-            echo "Nenhuma mudança detectada nos arquivos de links hoje."
+            git commit -m "🤖 [Etapa 03] Execução de meu_robo.py finalizada"
+            git pull --rebase origin main
+            git push origin main
           fi
